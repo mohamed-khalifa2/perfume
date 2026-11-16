@@ -23,24 +23,31 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   },
 });
 
-async function main() {
-  const email = "mohamed.khalifa4090@gmail.com";
-  const password = "khalifa500";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "test@maisonnoir.eg";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "test";
 
-  const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+async function main() {
+  const { data: listData, error: listError } = await supabase.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+
   if (listError) {
     console.error("Failed to list users:", listError.message);
     process.exit(1);
   }
 
-  let userId = listData.users.find((user) => user.email?.toLowerCase() === email.toLowerCase())?.id;
+  let userId = listData.users.find(
+    (user) => user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
+  )?.id;
 
   if (!userId) {
-    const { data: createData, error: createError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
+    const { data: createData, error: createError } =
+      await supabase.auth.admin.createUser({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD,
+        email_confirm: true,
+      });
 
     if (createError) {
       console.error("Failed to create user:", createError.message);
@@ -50,10 +57,13 @@ async function main() {
     userId = createData.user.id;
     console.log("Created auth user:", userId);
   } else {
-    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
-      password,
-      email_confirm: true,
-    });
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      userId,
+      {
+        password: ADMIN_PASSWORD,
+        email_confirm: true,
+      },
+    );
 
     if (updateError) {
       console.error("Failed to update user:", updateError.message);
@@ -63,13 +73,17 @@ async function main() {
     console.log("Updated existing auth user:", userId);
   }
 
-  const { error: adminError } = await supabase.from("admins").upsert({ user_id: userId }, { onConflict: "user_id" });
+  const { error: adminError } = await supabase
+    .from("admins")
+    .upsert({ user_id: userId }, { onConflict: "user_id" });
+
   if (adminError) {
     console.error("Failed to upsert admin record:", adminError.message);
     process.exit(1);
   }
 
-  console.log("Admin seeded successfully:", email);
+  console.log("Admin seeded successfully:", ADMIN_EMAIL);
+  console.log("Password:", ADMIN_PASSWORD);
 }
 
 main().catch((error) => {

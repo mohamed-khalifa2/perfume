@@ -12,7 +12,7 @@ function getErrorMessage(error: unknown): string {
     const message = String((error as { message: string }).message);
 
     if (message.toLowerCase().includes("invalid login credentials")) {
-      return "The email or password you entered is incorrect.";
+      return "The account or password you entered is incorrect.";
     }
     if (message.toLowerCase().includes("email not confirmed")) {
       return "Please verify your email address before signing in.";
@@ -34,9 +34,19 @@ function getErrorMessage(error: unknown): string {
   return "Something went wrong while signing in. Please try again.";
 }
 
+function resolveEmail(identifier: string): string {
+  const value = identifier.trim();
+
+  if (value.includes("@")) {
+    return value;
+  }
+
+  return `${value.toLowerCase()}@maisonnoir.eg`;
+}
+
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -45,8 +55,8 @@ export default function AdminLoginPage() {
     event.preventDefault();
     setError(null);
 
-    if (!email.trim() || !password) {
-      setError("Please enter your email address and password.");
+    if (!identifier.trim() || !password) {
+      setError("Please enter your account and password.");
       return;
     }
 
@@ -54,7 +64,7 @@ export default function AdminLoginPage() {
       try {
         const supabase = createClient();
         const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: resolveEmail(identifier),
           password,
         });
 
@@ -83,21 +93,25 @@ export default function AdminLoginPage() {
         <form className="mt-10 space-y-6" onSubmit={handleSubmit} noValidate>
           <div>
             <label
-              htmlFor="email"
+              htmlFor="identifier"
               className="text-xs uppercase tracking-label text-paper/70"
             >
-              Email address
+              Account
             </label>
             <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              id="identifier"
+              name="identifier"
+              type="text"
+              autoComplete="username"
+              placeholder="test"
+              value={identifier}
+              onChange={(event) => setIdentifier(event.target.value)}
               disabled={isPending}
               className="mt-3 border-paper/20 bg-transparent text-paper placeholder:text-paper/40 focus-visible:border-gold focus-visible:ring-0"
             />
+            <p className="mt-2 text-xs text-paper/40">
+              Use an email address or a single-word account name.
+            </p>
           </div>
 
           <div>

@@ -1,12 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowDown,
-  RefreshCcw,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
+import { RefreshCcw, ShieldCheck, Truck } from "lucide-react";
 
+import { Carousel } from "@/components/carousel";
 import { ProductCard } from "@/components/product-card";
 import { Container } from "@/components/ui/container";
 import { FadeIn } from "@/components/ui/fade-in";
@@ -155,8 +151,10 @@ export default async function HomePage() {
           </div>
         </Container>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-cream/50">
-          <ArrowDown className="size-4 animate-bounce" aria-hidden />
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+          <div className="relative h-16 w-px overflow-hidden bg-cream/20">
+            <span className="absolute inset-x-0 top-0 h-6 animate-scroll-line bg-cream/70" />
+          </div>
         </div>
       </section>
 
@@ -307,7 +305,12 @@ export default async function HomePage() {
             </div>
           </Container>
 
-          <div className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 lg:px-10">
+          <Carousel
+            ariaLabel="New arrivals"
+            className="mt-10"
+            controlsClassName="px-6 lg:px-10"
+            trackClassName="mt-6 gap-6 px-6 pb-2 lg:px-10"
+          >
             {displayNewArrivals.map((product) => (
               <div
                 key={product.id}
@@ -326,7 +329,7 @@ export default async function HomePage() {
                 />
               </div>
             ))}
-          </div>
+          </Carousel>
         </section>
       ) : null}
 
