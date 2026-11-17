@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -145,9 +146,20 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
 
               <Link
                 href="/"
-                className="font-display text-base uppercase tracking-editorial transition-opacity hover:opacity-70 md:text-lg"
+                className="flex items-center gap-3 font-display text-base uppercase tracking-editorial transition-opacity hover:opacity-70 md:text-lg"
               >
-                {settings.store_name}
+                {settings.logo_url ? (
+                  <Image
+                    src={settings.logo_url}
+                    alt={settings.store_name}
+                    loading="eager"
+                    width={160}
+                    height={40}
+                    className="h-8 w-auto object-contain md:h-9"
+                  />
+                ) : (
+                  settings.store_name
+                )}
               </Link>
 
               <nav className="hidden items-center gap-10 md:flex">
@@ -272,7 +284,18 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
               <div className="flex h-16 items-center justify-between border-b border-line">
                 <Container size="lg" className="flex items-center justify-between">
                   <span className="font-display text-base uppercase tracking-editorial text-ink">
-                    {settings.store_name}
+                    {settings.logo_url ? (
+                      <Image
+                        src={settings.logo_url}
+                        alt={settings.store_name}
+                        loading="eager"
+                        width={160}
+                        height={40}
+                        className="h-8 w-auto object-contain"
+                      />
+                    ) : (
+                      settings.store_name
+                    )}
                   </span>
                   <button
                     type="button"

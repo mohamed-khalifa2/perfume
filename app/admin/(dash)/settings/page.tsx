@@ -1,25 +1,41 @@
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { redirect } from "next/navigation";
+
+import { AdminNotice } from "@/components/admin/admin-notice";
+import { ImageField } from "@/components/admin/image-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import {
+  getFormFile,
+  uploadErrorMessage,
+  uploadSiteImage,
+} from "@/lib/admin/upload";
 
-export default async function AdminSettingsPage() {
+export default async function AdminSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  const { error, saved } = await searchParams;
   const { supabase } = await requireAdmin();
 
-    const { data: settings } = await supabase
-      .from("site_settings")
-      .select("*")
-      .eq("id", true)
-      .maybeSingle();
+  const { data: settings } = await supabase
+    .from("site_settings")
+    .select("*")
+    .eq("id", true)
+    .maybeSingle();
 
   async function updateSettings(formData: FormData) {
     "use server";
     const { supabase: s } = await requireAdmin();
 
     const store_name = String(formData.get("site_name") ?? "").trim();
+    const tagline = String(formData.get("tagline") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
     const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+    const address = String(formData.get("address") ?? "").trim();
     const instagram = String(formData.get("instagram") ?? "").trim();
     const facebook = String(formData.get("facebook") ?? "").trim();
     const tiktok = String(formData.get("tiktok") ?? "").trim();
@@ -30,12 +46,32 @@ export default async function AdminSettingsPage() {
     const seo_title = String(formData.get("seo_title") ?? "").trim();
     const seo_description = String(formData.get("seo_description") ?? "").trim();
 
-    await s.from("site_settings").upsert({
-      id: true as unknown as boolean,
+    if (!store_name) {
+      redirect("/admin/settings?error=Store%20name%20is%20required.");
+    }
+
+    let logo_url = String(formData.get("logo_url") ?? "").trim();
+    const file = getFormFile(formData, "logo_file");
+
+    try {
+      if (file) {
+        logo_url = await uploadSiteImage(s, file, "branding", store_name);
+      }
+    } catch (uploadError) {
+      redirect(
+        `/admin/settings?error=${encodeURIComponent(uploadErrorMessage(uploadError))}`,
+      );
+    }
+
+    const { error: saveError } = await s.from("site_settings").upsert({
+      id: true,
       store_name,
+      tagline: tagline || null,
+      logo_url: logo_url || null,
       email: email || null,
       phone: phone || null,
       whatsapp: whatsapp || null,
+      address: address || null,
       instagram: instagram || null,
       facebook: facebook || null,
       tiktok: tiktok || null,
@@ -44,12 +80,22 @@ export default async function AdminSettingsPage() {
       seo_title: seo_title || null,
       seo_description: seo_description || null,
     });
+
+    if (saveError) {
+      redirect(
+        `/admin/settings?error=${encodeURIComponent(saveError.message)}`,
+      );
+    }
+
+    redirect("/admin/settings?saved=1");
   }
 
   return (
     <div>
       <p className="text-xs uppercase tracking-label text-gold">Settings</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Site Settings</h1>
+
+      <AdminNotice error={error} saved={saved === "1"} />
 
       <form action={updateSettings} className="mt-10 max-w-3xl space-y-8">
         <div className="grid gap-6 sm:grid-cols-2">
@@ -64,6 +110,28 @@ export default async function AdminSettingsPage() {
               className="mt-2"
             />
           </div>
+          <div>
+            <label className="text-xs uppercase tracking-label text-muted">
+              Tagline
+            </label>
+            <Input
+              name="tagline"
+              defaultValue={settings?.tagline ?? ""}
+              className="mt-2"
+            />
+          </div>
+        </div>
+
+        <ImageField
+          label="Logo"
+          urlName="logo_url"
+          fileName="logo_file"
+          aspect="square"
+          defaultValue={settings?.logo_url ?? ""}
+          hint="Shown in the header and footer. A transparent PNG works best."
+        />
+
+        <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <label className="text-xs uppercase tracking-label text-muted">
               Email
@@ -92,6 +160,16 @@ export default async function AdminSettingsPage() {
             <Input
               name="whatsapp"
               defaultValue={settings?.whatsapp ?? ""}
+              className="mt-2"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-label text-muted">
+              Address
+            </label>
+            <Input
+              name="address"
+              defaultValue={settings?.address ?? ""}
               className="mt-2"
             />
           </div>

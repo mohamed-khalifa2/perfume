@@ -1,3 +1,4 @@
+import { productImageUrl, collectionImageUrl, PLACEHOLDER_IMAGE, HERO_IMAGE, STORY_IMAGE } from "@/lib/seed-images";
 import Image from "next/image";
 import Link from "next/link";
 import { RefreshCcw, ShieldCheck, Truck } from "lucide-react";
@@ -9,6 +10,7 @@ import { FadeIn } from "@/components/ui/fade-in";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { getSeedVariants } from "@/lib/product-variants";
 import {
   getFeaturedProducts,
   getHero,
@@ -56,7 +58,7 @@ export default async function HomePage() {
   const subheadline =
     hero?.subheadline ??
     "Small-batch eaux de parfum, blended in Cairo and shipped across Egypt.";
-  const heroImage = hero?.image_url ?? "https://picsum.photos/seed/maison-noir-hero/1920/1080";
+  const heroImage = hero?.image_url ?? HERO_IMAGE;
   const ctaLabel = hero?.cta_label ?? "Shop the collection";
   const ctaLink = hero?.cta_link ?? "/shop";
 
@@ -69,25 +71,32 @@ export default async function HomePage() {
     collections.length > 0
       ? collections
       : [
-          { id: "men", name: "Men", slug: "men", description: "Oud, leather, tobacco and smoke.", image_url: "https://picsum.photos/seed/collection-men/1200/1500", sort_order: 1, is_visible: true },
-          { id: "women", name: "Women", slug: "women", description: "Florals, resins and soft musks.", image_url: "https://picsum.photos/seed/collection-women/1200/1500", sort_order: 2, is_visible: true },
-          { id: "unisex", name: "Unisex", slug: "unisex", description: "Shared signatures, made to be worn by anyone.", image_url: "https://picsum.photos/seed/collection-unisex/1200/1500", sort_order: 3, is_visible: true },
-          { id: "best-sellers", name: "Best Sellers", slug: "best-sellers", description: "The house favourites, chosen by our clients.", image_url: "https://picsum.photos/seed/collection-best-sellers/1200/1500", sort_order: 4, is_visible: true },
+          { id: "men", name: "Men", slug: "men", description: "Oud, leather, tobacco and smoke.", image_url: collectionImageUrl("men"), sort_order: 1, is_visible: true },
+          { id: "women", name: "Women", slug: "women", description: "Florals, resins and soft musks.", image_url: collectionImageUrl("women"), sort_order: 2, is_visible: true },
+          { id: "unisex", name: "Unisex", slug: "unisex", description: "Shared signatures, made to be worn by anyone.", image_url: collectionImageUrl("unisex"), sort_order: 3, is_visible: true },
+          { id: "best-sellers", name: "Best Sellers", slug: "best-sellers", description: "The house favourites, chosen by our clients.", image_url: collectionImageUrl("best-sellers"), sort_order: 4, is_visible: true },
         ];
 
-  const displayFeatured =
+  const displayFeatured = (
     featured.length > 0
       ? featured
       : [
-          { id: "oud-noir", name: "Oud Noir", slug: "oud-noir", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/oud-noir-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 1, price: 1450, compareAtPrice: 2450, galleryImage: "https://picsum.photos/seed/oud-noir-gallery-1/900/1200" },
-          { id: "velours-rouge", name: "Velours Rouge", slug: "velours-rouge", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/velours-rouge-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 2, price: 1250, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/velours-rouge-gallery-1/900/1200" },
-          { id: "amber-empress", name: "Amber Empress", slug: "amber-empress", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/amber-empress-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 3, price: 2150, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/amber-empress-gallery-1/900/1200" },
-          { id: "cairo-nights", name: "Cairo Nights", slug: "cairo-nights", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/cairo-nights-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 4, price: 1850, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/cairo-nights-gallery-1/900/1200" },
-          { id: "myrrh-royale", name: "Myrrh Royale", slug: "myrrh-royale", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/myrrh-royale-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 5, price: 2150, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/myrrh-royale-gallery-1/900/1200" },
-          { id: "desert-santal", name: "Desert Santal", slug: "desert-santal", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/desert-santal-cover/900/1200", is_featured: true, is_new: false, is_visible: true, sort_order: 6, price: 1850, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/desert-santal-gallery-1/900/1200" },
-          { id: "tobacco-noir", name: "Tobacco Noir", slug: "tobacco-noir", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/tobacco-noir-cover/900/1200", is_featured: true, is_new: false, is_visible: true, sort_order: 7, price: 2150, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/tobacco-noir-gallery-1/900/1200" },
-          { id: "musk-imperial", name: "Musk Imperial", slug: "musk-imperial", brand: "Maison Noir", cover_image_url: "https://picsum.photos/seed/musk-imperial-cover/900/1200", is_featured: true, is_new: true, is_visible: true, sort_order: 8, price: 2150, compareAtPrice: null, galleryImage: "https://picsum.photos/seed/musk-imperial-gallery-1/900/1200" },
-        ];
+          { id: "oud-noir", name: "Oud Noir", slug: "oud-noir", brand: "Maison Noir", cover_image_url: productImageUrl("oud-noir"), is_featured: true, is_new: true, is_visible: true, sort_order: 1, price: 1450, compareAtPrice: 2450, galleryImage: productImageUrl("oud-noir", 1) },
+          { id: "velours-rouge", name: "Velours Rouge", slug: "velours-rouge", brand: "Maison Noir", cover_image_url: productImageUrl("velours-rouge"), is_featured: true, is_new: true, is_visible: true, sort_order: 2, price: 1250, compareAtPrice: null, galleryImage: productImageUrl("velours-rouge", 1) },
+          { id: "amber-empress", name: "Amber Empress", slug: "amber-empress", brand: "Maison Noir", cover_image_url: productImageUrl("amber-empress"), is_featured: true, is_new: true, is_visible: true, sort_order: 3, price: 2150, compareAtPrice: null, galleryImage: productImageUrl("amber-empress", 1) },
+          { id: "cairo-nights", name: "Cairo Nights", slug: "cairo-nights", brand: "Maison Noir", cover_image_url: productImageUrl("cairo-nights"), is_featured: true, is_new: true, is_visible: true, sort_order: 4, price: 1850, compareAtPrice: null, galleryImage: productImageUrl("cairo-nights", 1) },
+          { id: "myrrh-royale", name: "Myrrh Royale", slug: "myrrh-royale", brand: "Maison Noir", cover_image_url: productImageUrl("myrrh-royale"), is_featured: true, is_new: true, is_visible: true, sort_order: 5, price: 2150, compareAtPrice: null, galleryImage: productImageUrl("myrrh-royale", 1) },
+          { id: "desert-santal", name: "Desert Santal", slug: "desert-santal", brand: "Maison Noir", cover_image_url: productImageUrl("desert-santal"), is_featured: true, is_new: false, is_visible: true, sort_order: 6, price: 1850, compareAtPrice: null, galleryImage: productImageUrl("desert-santal", 1) },
+          { id: "tobacco-noir", name: "Tobacco Noir", slug: "tobacco-noir", brand: "Maison Noir", cover_image_url: productImageUrl("tobacco-noir"), is_featured: true, is_new: false, is_visible: true, sort_order: 7, price: 2150, compareAtPrice: null, galleryImage: productImageUrl("tobacco-noir", 1) },
+          { id: "musk-imperial", name: "Musk Imperial", slug: "musk-imperial", brand: "Maison Noir", cover_image_url: productImageUrl("musk-imperial"), is_featured: true, is_new: true, is_visible: true, sort_order: 8, price: 2150, compareAtPrice: null, galleryImage: productImageUrl("musk-imperial", 1) },
+        ]
+  ).map((product) => ({
+    ...product,
+    variants:
+      "variants" in product && product.variants
+        ? product.variants
+        : getSeedVariants(product.slug),
+  }));
 
   const displayNewArrivals =
     newArrivals.length > 0
@@ -109,7 +118,7 @@ export default async function HomePage() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
 
-        <Container size="lg" className="relative pb-16 md:pb-24">
+        <Container size="lg" className="relative pb-28 md:pb-24">
           <div className="max-w-3xl">
             <FadeIn distance={18}>
               <p className="text-[11px] uppercase tracking-label text-gold">
@@ -137,23 +146,14 @@ export default async function HomePage() {
                 >
                   {ctaLabel}
                 </Link>
-                <Link
-                  href="/about"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "border-cream/40 text-cream hover:bg-cream hover:text-ink",
-                  )}
-                >
-                  Our story
-                </Link>
               </div>
             </FadeIn>
           </div>
         </Container>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <div className="relative h-16 w-px overflow-hidden bg-cream/20">
-            <span className="absolute inset-x-0 top-0 h-6 animate-scroll-line bg-cream/70" />
+          <div className="relative h-10 w-px overflow-hidden bg-cream/20">
+            <span className="absolute inset-x-0 top-0 h-4 animate-scroll-line bg-cream/70" />
           </div>
         </div>
       </section>
@@ -228,11 +228,12 @@ export default async function HomePage() {
                     name={product.name}
                     slug={product.slug}
                     brand={product.brand}
-                    coverImage={product.cover_image_url ?? "https://picsum.photos/seed/placeholder/900/1200"}
+                    coverImage={product.cover_image_url ?? PLACEHOLDER_IMAGE}
                     galleryImage={product.galleryImage}
                     price={product.price}
                     compareAtPrice={product.compareAtPrice}
                     isNew={product.is_new}
+                    variants={product.variants}
                     priority={index < 2}
                   />
                 </FadeIn>
@@ -255,7 +256,7 @@ export default async function HomePage() {
         <div className="relative overflow-hidden">
           <div className="relative aspect-16/9 min-h-[70vh] lg:aspect-[21/9]">
             <Image
-              src="https://picsum.photos/seed/maison-noir-story/1920/1080"
+              src={STORY_IMAGE}
               alt="Maison Noir atelier"
               fill
               sizes="100vw"
@@ -321,11 +322,12 @@ export default async function HomePage() {
                   name={product.name}
                   slug={product.slug}
                   brand={product.brand}
-                  coverImage={product.cover_image_url ?? "https://picsum.photos/seed/placeholder/900/1200"}
+                  coverImage={product.cover_image_url ?? PLACEHOLDER_IMAGE}
                   galleryImage={product.galleryImage}
                   price={product.price}
                   compareAtPrice={product.compareAtPrice}
                   isNew={product.is_new}
+                  variants={product.variants}
                 />
               </div>
             ))}

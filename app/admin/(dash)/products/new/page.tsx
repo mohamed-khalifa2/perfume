@@ -1,11 +1,26 @@
 import { redirect } from "next/navigation";
 
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { AdminNotice } from "@/components/admin/admin-notice";
+import { GalleryField } from "@/components/admin/gallery-field";
+import { ImageField } from "@/components/admin/image-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import { uniqueSlug } from "@/lib/admin/slug";
+import {
+  getFormFile,
+  getFormFiles,
+  uploadErrorMessage,
+  uploadSiteImage,
+} from "@/lib/admin/upload";
 
-export default async function AdminNewProductPage() {
+export default async function AdminNewProductPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const { supabase } = await requireAdmin();
 
   const { data: collections } = await supabase
@@ -19,11 +34,6 @@ export default async function AdminNewProductPage() {
     const { supabase: s } = await requireAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
-    const slug = String(formData.get("slug") ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
     const brand = String(formData.get("brand") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
     const gender = String(formData.get("gender") ?? "unisex") as
@@ -36,7 +46,6 @@ export default async function AdminNewProductPage() {
       | "Parfum"
       | "Extrait";
     const scent_family = String(formData.get("scent_family") ?? "").trim();
-    const cover_image_url = String(formData.get("cover_image_url") ?? "").trim();
     const top_notes = String(formData.get("top_notes") ?? "")
       .split(",")
       .map((n) => n.trim())
@@ -54,7 +63,39 @@ export default async function AdminNewProductPage() {
     const is_visible = formData.get("is_visible") === "on";
     const sort_order = Number(formData.get("sort_order") ?? 0);
 
-    const { data: product } = await s
+    if (!name) {
+      redirect("/admin/products/new?error=Name%20is%20required.");
+    }
+
+    let cover_image_url = String(formData.get("cover_image_url") ?? "").trim();
+    const coverFile = getFormFile(formData, "cover_image_file");
+    const galleryFiles = getFormFiles(formData, "gallery_files");
+
+    const galleryUrls: string[] = [];
+
+    try {
+      if (coverFile) {
+        cover_image_url = await uploadSiteImage(s, coverFile, "products", name);
+      }
+
+      for (const [index, file] of galleryFiles.entries()) {
+        const url = await uploadSiteImage(
+          s,
+          file,
+          "products",
+          `${name}-${index + 1}`,
+        );
+        galleryUrls.push(url);
+      }
+    } catch (uploadError) {
+      redirect(
+        `/admin/products/new?error=${encodeURIComponent(uploadErrorMessage(uploadError))}`,
+      );
+    }
+
+    const slug = await uniqueSlug(s, "products", name);
+
+    const { data: product, error: saveError } = await s
       .from("products")
       .insert({
         name,
@@ -76,16 +117,32 @@ export default async function AdminNewProductPage() {
       .select("id")
       .single();
 
-    if (product) {
-      const collectionIds = formData.getAll("collections");
-      if (collectionIds.length) {
-        await s.from("product_collections").insert(
-          collectionIds.map((cid) => ({
-            product_id: product.id,
-            collection_id: String(cid),
-          })),
-        );
-      }
+    if (saveError || !product) {
+      redirect(
+        `/admin/products/new?error=${encodeURIComponent(
+          saveError?.message ?? "The product could not be created.",
+        )}`,
+      );
+    }
+
+    if (galleryUrls.length) {
+      await s.from("product_images").insert(
+        galleryUrls.map((url, index) => ({
+          product_id: product.id,
+          image_url: url,
+          sort_order: index + 1,
+        })),
+      );
+    }
+
+    const collectionIds = formData.getAll("collections");
+    if (collectionIds.length) {
+      await s.from("product_collections").insert(
+        collectionIds.map((cid) => ({
+          product_id: product.id,
+          collection_id: String(cid),
+        })),
+      );
     }
 
     redirect("/admin/products");
@@ -96,20 +153,17 @@ export default async function AdminNewProductPage() {
       <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">New product</h1>
 
+      <AdminNotice error={error} />
+
       <form action={createProduct} className="mt-10 max-w-3xl space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Name
-            </label>
-            <Input name="name" required className="mt-2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Slug
-            </label>
-            <Input name="slug" required className="mt-2" />
-          </div>
+        <div>
+          <label className="text-xs uppercase tracking-label text-muted">
+            Name
+          </label>
+          <Input name="name" required className="mt-2" />
+          <p className="mt-2 text-xs text-muted">
+            The URL slug is generated from the name automatically.
+          </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
@@ -146,19 +200,22 @@ export default async function AdminNewProductPage() {
             </select>
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Scent Family
-            </label>
-            <Input name="scent_family" className="mt-2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Cover Image URL
-            </label>
-            <Input name="cover_image_url" className="mt-2" />
-          </div>
+
+        <ImageField
+          label="Cover image"
+          urlName="cover_image_url"
+          fileName="cover_image_file"
+          aspect="portrait"
+          hint="Used on product cards and as the first image on the product page."
+        />
+
+        <GalleryField label="Gallery images" />
+
+        <div>
+          <label className="text-xs uppercase tracking-label text-muted">
+            Scent Family
+          </label>
+          <Input name="scent_family" className="mt-2" />
         </div>
         <div>
           <label className="text-xs uppercase tracking-label text-muted">

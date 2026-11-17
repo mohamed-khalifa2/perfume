@@ -5,6 +5,11 @@ import { ProductCardQuickAdd } from "@/components/product-card-quick-add";
 import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/cn";
+import {
+  allVariantsSoldOut,
+  cheapestVariant,
+  type ProductVariantOption,
+} from "@/lib/product-variants";
 
 export type ProductCardProps = {
   id: string;
@@ -18,6 +23,7 @@ export type ProductCardProps = {
   isNew?: boolean;
   className?: string;
   priority?: boolean;
+  variants?: ProductVariantOption[];
 };
 
 export function ProductCard({
@@ -32,8 +38,16 @@ export function ProductCard({
   isNew = false,
   className,
   priority = false,
+  variants = [],
 }: ProductCardProps) {
   const sizes = "(min-width: 1280px) 22vw, (min-width: 768px) 33vw, 50vw";
+
+  // Cards always advertise and add the cheapest variant that is in stock.
+  const addVariant = cheapestVariant(variants, true);
+  const displayVariant = addVariant ?? cheapestVariant(variants, false);
+  const displayPrice = displayVariant?.price ?? price;
+  const displayCompareAt = displayVariant?.compareAtPrice ?? compareAtPrice;
+  const soldOut = allVariantsSoldOut(variants);
 
   return (
     <article className={cn("group flex flex-col", className)}>
@@ -72,8 +86,17 @@ export function ProductCard({
           </Badge>
         ) : null}
 
-        <div className="absolute right-3 bottom-3 z-10 translate-y-2 opacity-0 transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 focus-within:translate-y-0 focus-within:opacity-100">
-          <ProductCardQuickAdd productId={id} productName={name} />
+        <div className="absolute right-3 bottom-3 z-10 transition-all duration-500 ease-out md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-within:translate-y-0 md:focus-within:opacity-100">
+          <ProductCardQuickAdd
+            productId={id}
+            slug={slug}
+            productName={name}
+            price={displayPrice}
+            image={coverImage}
+            variantId={addVariant?.id}
+            sizeMl={addVariant?.sizeMl}
+            disabled={soldOut}
+          />
         </div>
       </div>
 
@@ -91,7 +114,12 @@ export function ProductCard({
           </Link>
         </h3>
 
-        <Price amount={price} compareAt={compareAtPrice} size="sm" prefix="from" />
+        <Price
+          amount={displayPrice}
+          compareAt={displayCompareAt}
+          size="sm"
+          prefix="from"
+        />
       </div>
     </article>
   );

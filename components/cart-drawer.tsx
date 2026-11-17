@@ -191,9 +191,11 @@ export function CartDrawer({ freeShippingThreshold }: CartDrawerProps) {
                           >
                             {item.name}
                           </Link>
-                          <p className="mt-1 text-[11px] uppercase tracking-label text-muted">
-                            {item.sizeMl} ml
-                          </p>
+                          {item.sizeMl ? (
+                            <p className="mt-1 text-[11px] uppercase tracking-label text-muted">
+                              {item.sizeMl} ml
+                            </p>
+                          ) : null}
                         </div>
 
                         <button

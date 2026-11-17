@@ -1,24 +1,46 @@
 import { notFound, redirect } from "next/navigation";
 
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { AdminNotice } from "@/components/admin/admin-notice";
+import { GalleryField } from "@/components/admin/gallery-field";
+import { ImageField } from "@/components/admin/image-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import { uniqueSlug } from "@/lib/admin/slug";
+import {
+  getFormFile,
+  getFormFiles,
+  uploadErrorMessage,
+  uploadSiteImage,
+} from "@/lib/admin/upload";
 
 export default async function AdminProductEditPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; saved?: string }>;
 }) {
   const { id } = await params;
+  const { error, saved } = await searchParams;
   const { supabase } = await requireAdmin();
 
-  const [{ data: product }, { data: collections }, { data: productCollections }] =
-    await Promise.all([
-      supabase.from("products").select("*").eq("id", id).maybeSingle(),
-      supabase.from("collections").select("id, name").order("sort_order"),
-      supabase.from("product_collections").select("collection_id").eq("product_id", id),
-    ]);
+  const [
+    { data: product },
+    { data: collections },
+    { data: productCollections },
+    { data: gallery },
+  ] = await Promise.all([
+    supabase.from("products").select("*").eq("id", id).maybeSingle(),
+    supabase.from("collections").select("id, name").order("sort_order"),
+    supabase.from("product_collections").select("collection_id").eq("product_id", id),
+    supabase
+      .from("product_images")
+      .select("id, image_url, sort_order")
+      .eq("product_id", id)
+      .order("sort_order", { ascending: true }),
+  ]);
 
   if (!product) {
     notFound();
@@ -31,11 +53,6 @@ export default async function AdminProductEditPage({
     const { supabase: s } = await requireAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
-    const slug = String(formData.get("slug") ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
     const brand = String(formData.get("brand") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
     const gender = String(formData.get("gender") ?? "unisex") as
@@ -48,7 +65,6 @@ export default async function AdminProductEditPage({
       | "Parfum"
       | "Extrait";
     const scent_family = String(formData.get("scent_family") ?? "").trim();
-    const cover_image_url = String(formData.get("cover_image_url") ?? "").trim();
     const top_notes = String(formData.get("top_notes") ?? "")
       .split(",")
       .map((n) => n.trim())
@@ -66,7 +82,43 @@ export default async function AdminProductEditPage({
     const is_visible = formData.get("is_visible") === "on";
     const sort_order = Number(formData.get("sort_order") ?? 0);
 
-    await s
+    if (!name) {
+      redirect(`/admin/products/${id}?error=Name%20is%20required.`);
+    }
+
+    let cover_image_url = String(formData.get("cover_image_url") ?? "").trim();
+    const coverFile = getFormFile(formData, "cover_image_file");
+    const galleryFiles = getFormFiles(formData, "gallery_files");
+    const removeImageIds = formData
+      .getAll("remove_images")
+      .map((value) => String(value))
+      .filter(Boolean);
+
+    const galleryUrls: string[] = [];
+
+    try {
+      if (coverFile) {
+        cover_image_url = await uploadSiteImage(s, coverFile, "products", name);
+      }
+
+      for (const [index, file] of galleryFiles.entries()) {
+        const url = await uploadSiteImage(
+          s,
+          file,
+          "products",
+          `${name}-${index + 1}`,
+        );
+        galleryUrls.push(url);
+      }
+    } catch (uploadError) {
+      redirect(
+        `/admin/products/${id}?error=${encodeURIComponent(uploadErrorMessage(uploadError))}`,
+      );
+    }
+
+    const slug = await uniqueSlug(s, "products", name, id);
+
+    const { error: saveError } = await s
       .from("products")
       .update({
         name,
@@ -87,6 +139,39 @@ export default async function AdminProductEditPage({
       })
       .eq("id", id);
 
+    if (saveError) {
+      redirect(
+        `/admin/products/${id}?error=${encodeURIComponent(saveError.message)}`,
+      );
+    }
+
+    if (removeImageIds.length) {
+      await s
+        .from("product_images")
+        .delete()
+        .eq("product_id", id)
+        .in("id", removeImageIds);
+    }
+
+    if (galleryUrls.length) {
+      const { data: remaining } = await s
+        .from("product_images")
+        .select("sort_order")
+        .eq("product_id", id)
+        .order("sort_order", { ascending: false })
+        .limit(1);
+
+      const startOrder = (remaining?.[0]?.sort_order ?? 0) + 1;
+
+      await s.from("product_images").insert(
+        galleryUrls.map((url, index) => ({
+          product_id: id,
+          image_url: url,
+          sort_order: startOrder + index,
+        })),
+      );
+    }
+
     await s.from("product_collections").delete().eq("product_id", id);
     const collectionIds = formData.getAll("collections");
     if (collectionIds.length) {
@@ -98,7 +183,7 @@ export default async function AdminProductEditPage({
       );
     }
 
-    redirect("/admin/products");
+    redirect(`/admin/products/${id}?saved=1`);
   }
 
   async function deleteProduct() {
@@ -113,20 +198,18 @@ export default async function AdminProductEditPage({
       <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Edit product</h1>
 
+      <AdminNotice error={error} saved={saved === "1"} />
+
       <form action={updateProduct} className="mt-10 max-w-3xl space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Name
-            </label>
-            <Input name="name" required defaultValue={product.name} className="mt-2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Slug
-            </label>
-            <Input name="slug" required defaultValue={product.slug} className="mt-2" />
-          </div>
+        <div>
+          <label className="text-xs uppercase tracking-label text-muted">
+            Name
+          </label>
+          <Input name="name" required defaultValue={product.name} className="mt-2" />
+          <p className="mt-2 text-xs text-muted">
+            Slug: <span className="text-ink">{product.slug}</span> · updated
+            automatically when the name changes.
+          </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
@@ -165,18 +248,30 @@ export default async function AdminProductEditPage({
             </select>
           </div>
         </div>
+
+        <ImageField
+          label="Cover image"
+          urlName="cover_image_url"
+          fileName="cover_image_file"
+          aspect="portrait"
+          defaultValue={product.cover_image_url ?? ""}
+          hint="Used on product cards and as the first image on the product page."
+        />
+
+        <GalleryField
+          label="Gallery images"
+          existing={(gallery ?? []).map((image) => ({
+            id: image.id,
+            imageUrl: image.image_url,
+          }))}
+        />
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="text-xs uppercase tracking-label text-muted">
               Scent Family
             </label>
             <Input name="scent_family" defaultValue={product.scent_family ?? ""} className="mt-2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Cover Image URL
-            </label>
-            <Input name="cover_image_url" defaultValue={product.cover_image_url ?? ""} className="mt-2" />
           </div>
         </div>
         <div>

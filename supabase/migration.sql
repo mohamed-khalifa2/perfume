@@ -794,7 +794,7 @@ values (
   true,
   'Fragrance, composed.',
   'Small-batch eaux de parfum, blended in Cairo and shipped across Egypt.',
-  'https://picsum.photos/seed/maison-noir-hero/1920/1080',
+  'https://images.pexels.com/photos/11517300/pexels-photo-11517300.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
   'Shop the collection',
   '/shop'
 )
@@ -809,10 +809,10 @@ on conflict (id) do update set
 insert into public.collections (name, slug, description, image_url, sort_order, is_visible)
 select v.name, v.slug, v.description, v.image_url, v.sort_order, true
 from (values
-  ('Men',            'men',          'Compositions for him — oud, leather, tobacco and smoke.', 'https://picsum.photos/seed/collection-men/1200/1500', 1),
-  ('Women',          'women',        'Florals, resins and soft musks.',                          'https://picsum.photos/seed/collection-women/1200/1500', 2),
-  ('Unisex',         'unisex',       'Shared signatures, made to be worn by anyone.',             'https://picsum.photos/seed/collection-unisex/1200/1500', 3),
-  ('Best Sellers',   'best-sellers', 'The house favourites, chosen by our clients.',               'https://picsum.photos/seed/collection-best-sellers/1200/1500', 4)
+  ('Men',            'men',          'Compositions for him — oud, leather, tobacco and smoke.', 'https://images.pexels.com/photos/32645074/pexels-photo-32645074.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 1),
+  ('Women',          'women',        'Florals, resins and soft musks.',                          'https://images.pexels.com/photos/32630385/pexels-photo-32630385.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 2),
+  ('Unisex',         'unisex',       'Shared signatures, made to be worn by anyone.',             'https://images.pexels.com/photos/13875783/pexels-photo-13875783.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 3),
+  ('Best Sellers',   'best-sellers', 'The house favourites, chosen by our clients.',               'https://images.pexels.com/photos/35930230/pexels-photo-35930230.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 4)
 ) as v(name, slug, description, image_url, sort_order)
 on conflict (slug) do update set
   name = excluded.name,
@@ -833,7 +833,25 @@ select
   v.concentration::public.product_concentration,
   v.top_notes::text[], v.heart_notes::text[], v.base_notes::text[],
   v.scent_family,
-  'https://picsum.photos/seed/' || v.slug || '-cover/900/1200',
+  case v.slug
+    when 'oud-noir' then 'https://images.pexels.com/photos/11482468/pexels-photo-11482468.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'velours-rouge' then 'https://images.pexels.com/photos/5994299/pexels-photo-5994299.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'blanc-de-nuit' then 'https://images.pexels.com/photos/12402366/pexels-photo-12402366.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'amber-empress' then 'https://images.pexels.com/photos/12456259/pexels-photo-12456259.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'desert-santal' then 'https://images.pexels.com/photos/32817141/pexels-photo-32817141.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'cairo-nights' then 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'tobacco-noir' then 'https://images.pexels.com/photos/30981935/pexels-photo-30981935.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'fig-and-cedar' then 'https://images.pexels.com/photos/33295344/pexels-photo-33295344.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'rose-ivoire' then 'https://images.pexels.com/photos/10786706/pexels-photo-10786706.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'myrrh-royale' then 'https://images.pexels.com/photos/12456274/pexels-photo-12456274.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'bergamot-silk' then 'https://images.pexels.com/photos/35658144/pexels-photo-35658144.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'leather-and-oud' then 'https://images.pexels.com/photos/14490634/pexels-photo-14490634.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'jasmine-noir' then 'https://images.pexels.com/photos/19954486/pexels-photo-19954486.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'vetiver-smoke' then 'https://images.pexels.com/photos/15190739/pexels-photo-15190739.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'peche-sauvage' then 'https://images.pexels.com/photos/38949831/pexels-photo-38949831.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    when 'musk-imperial' then 'https://images.pexels.com/photos/34051691/pexels-photo-34051691.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+    else 'https://images.pexels.com/photos/10924522/pexels-photo-10924522.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop'
+  end,
   v.is_featured, v.is_new, true, v.sort_order
 from (values
   ('Oud Noir', 'oud-noir', 'Maison Noir',
@@ -1007,73 +1025,73 @@ on conflict (sku) do update set
 
 -- --- Product images (cover + 3 gallery per product) -----------------------
 insert into public.product_images (product_id, image_url, sort_order)
-select p.id, 'https://picsum.photos/seed/' || v.seed || '/900/1200', v.sort_order
+select p.id, v.image_url, v.sort_order
 from (values
-  ('oud-noir',        'oud-noir-cover',        0),
-  ('oud-noir',        'oud-noir-gallery-1',    1),
-  ('oud-noir',        'oud-noir-gallery-2',    2),
-  ('oud-noir',        'oud-noir-gallery-3',    3),
-  ('velours-rouge',   'velours-rouge-cover',   0),
-  ('velours-rouge',   'velours-rouge-gallery-1', 1),
-  ('velours-rouge',   'velours-rouge-gallery-2', 2),
-  ('velours-rouge',   'velours-rouge-gallery-3', 3),
-  ('blanc-de-nuit',   'blanc-de-nuit-cover',   0),
-  ('blanc-de-nuit',   'blanc-de-nuit-gallery-1', 1),
-  ('blanc-de-nuit',   'blanc-de-nuit-gallery-2', 2),
-  ('blanc-de-nuit',   'blanc-de-nuit-gallery-3', 3),
-  ('amber-empress',   'amber-empress-cover',   0),
-  ('amber-empress',   'amber-empress-gallery-1', 1),
-  ('amber-empress',   'amber-empress-gallery-2', 2),
-  ('amber-empress',   'amber-empress-gallery-3', 3),
-  ('desert-santal',   'desert-santal-cover',   0),
-  ('desert-santal',   'desert-santal-gallery-1', 1),
-  ('desert-santal',   'desert-santal-gallery-2', 2),
-  ('desert-santal',   'desert-santal-gallery-3', 3),
-  ('cairo-nights',    'cairo-nights-cover',    0),
-  ('cairo-nights',    'cairo-nights-gallery-1', 1),
-  ('cairo-nights',    'cairo-nights-gallery-2', 2),
-  ('cairo-nights',    'cairo-nights-gallery-3', 3),
-  ('tobacco-noir',    'tobacco-noir-cover',    0),
-  ('tobacco-noir',    'tobacco-noir-gallery-1', 1),
-  ('tobacco-noir',    'tobacco-noir-gallery-2', 2),
-  ('tobacco-noir',    'tobacco-noir-gallery-3', 3),
-  ('fig-and-cedar',   'fig-and-cedar-cover',   0),
-  ('fig-and-cedar',   'fig-and-cedar-gallery-1', 1),
-  ('fig-and-cedar',   'fig-and-cedar-gallery-2', 2),
-  ('fig-and-cedar',   'fig-and-cedar-gallery-3', 3),
-  ('rose-ivoire',     'rose-ivoire-cover',     0),
-  ('rose-ivoire',     'rose-ivoire-gallery-1', 1),
-  ('rose-ivoire',     'rose-ivoire-gallery-2', 2),
-  ('rose-ivoire',     'rose-ivoire-gallery-3', 3),
-  ('myrrh-royale',    'myrrh-royale-cover',    0),
-  ('myrrh-royale',    'myrrh-royale-gallery-1', 1),
-  ('myrrh-royale',    'myrrh-royale-gallery-2', 2),
-  ('myrrh-royale',    'myrrh-royale-gallery-3', 3),
-  ('bergamot-silk',   'bergamot-silk-cover',   0),
-  ('bergamot-silk',   'bergamot-silk-gallery-1', 1),
-  ('bergamot-silk',   'bergamot-silk-gallery-2', 2),
-  ('bergamot-silk',   'bergamot-silk-gallery-3', 3),
-  ('leather-and-oud', 'leather-and-oud-cover', 0),
-  ('leather-and-oud', 'leather-and-oud-gallery-1', 1),
-  ('leather-and-oud', 'leather-and-oud-gallery-2', 2),
-  ('leather-and-oud', 'leather-and-oud-gallery-3', 3),
-  ('jasmine-noir',    'jasmine-noir-cover',    0),
-  ('jasmine-noir',    'jasmine-noir-gallery-1', 1),
-  ('jasmine-noir',    'jasmine-noir-gallery-2', 2),
-  ('jasmine-noir',    'jasmine-noir-gallery-3', 3),
-  ('vetiver-smoke',   'vetiver-smoke-cover',   0),
-  ('vetiver-smoke',   'vetiver-smoke-gallery-1', 1),
-  ('vetiver-smoke',   'vetiver-smoke-gallery-2', 2),
-  ('vetiver-smoke',   'vetiver-smoke-gallery-3', 3),
-  ('peche-sauvage',   'peche-sauvage-cover',   0),
-  ('peche-sauvage',   'peche-sauvage-gallery-1', 1),
-  ('peche-sauvage',   'peche-sauvage-gallery-2', 2),
-  ('peche-sauvage',   'peche-sauvage-gallery-3', 3),
-  ('musk-imperial',   'musk-imperial-cover',   0),
-  ('musk-imperial',   'musk-imperial-gallery-1', 1),
-  ('musk-imperial',   'musk-imperial-gallery-2', 2),
-  ('musk-imperial',   'musk-imperial-gallery-3', 3)
-) as v(slug, seed, sort_order)
+  ('oud-noir', 'https://images.pexels.com/photos/11482468/pexels-photo-11482468.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('oud-noir', 'https://images.pexels.com/photos/30618765/pexels-photo-30618765.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('oud-noir', 'https://images.pexels.com/photos/15096784/pexels-photo-15096784.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('oud-noir', 'https://images.pexels.com/photos/38721543/pexels-photo-38721543.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('velours-rouge', 'https://images.pexels.com/photos/5994299/pexels-photo-5994299.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('velours-rouge', 'https://images.pexels.com/photos/12556542/pexels-photo-12556542.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('velours-rouge', 'https://images.pexels.com/photos/35806941/pexels-photo-35806941.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('velours-rouge', 'https://images.pexels.com/photos/4735908/pexels-photo-4735908.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('blanc-de-nuit', 'https://images.pexels.com/photos/12402366/pexels-photo-12402366.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('blanc-de-nuit', 'https://images.pexels.com/photos/13875783/pexels-photo-13875783.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('blanc-de-nuit', 'https://images.pexels.com/photos/10688062/pexels-photo-10688062.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('blanc-de-nuit', 'https://images.pexels.com/photos/16239693/pexels-photo-16239693.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('amber-empress', 'https://images.pexels.com/photos/12456259/pexels-photo-12456259.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('amber-empress', 'https://images.pexels.com/photos/8450399/pexels-photo-8450399.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('amber-empress', 'https://images.pexels.com/photos/8450228/pexels-photo-8450228.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('amber-empress', 'https://images.pexels.com/photos/12456274/pexels-photo-12456274.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('desert-santal', 'https://images.pexels.com/photos/32817141/pexels-photo-32817141.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('desert-santal', 'https://images.pexels.com/photos/15096784/pexels-photo-15096784.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('desert-santal', 'https://images.pexels.com/photos/34051737/pexels-photo-34051737.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('desert-santal', 'https://images.pexels.com/photos/4735929/pexels-photo-4735929.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('cairo-nights', 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('cairo-nights', 'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('cairo-nights', 'https://images.pexels.com/photos/21926655/pexels-photo-21926655.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('cairo-nights', 'https://images.pexels.com/photos/21926651/pexels-photo-21926651.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('tobacco-noir', 'https://images.pexels.com/photos/30981935/pexels-photo-30981935.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('tobacco-noir', 'https://images.pexels.com/photos/39179564/pexels-photo-39179564.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('tobacco-noir', 'https://images.pexels.com/photos/12456283/pexels-photo-12456283.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('tobacco-noir', 'https://images.pexels.com/photos/8450345/pexels-photo-8450345.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('fig-and-cedar', 'https://images.pexels.com/photos/33295344/pexels-photo-33295344.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('fig-and-cedar', 'https://images.pexels.com/photos/8450212/pexels-photo-8450212.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('fig-and-cedar', 'https://images.pexels.com/photos/8450391/pexels-photo-8450391.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('fig-and-cedar', 'https://images.pexels.com/photos/8450354/pexels-photo-8450354.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('rose-ivoire', 'https://images.pexels.com/photos/10786706/pexels-photo-10786706.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('rose-ivoire', 'https://images.pexels.com/photos/30405427/pexels-photo-30405427.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('rose-ivoire', 'https://images.pexels.com/photos/8450391/pexels-photo-8450391.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('rose-ivoire', 'https://images.pexels.com/photos/16266295/pexels-photo-16266295.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('myrrh-royale', 'https://images.pexels.com/photos/12456274/pexels-photo-12456274.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('myrrh-royale', 'https://images.pexels.com/photos/8450399/pexels-photo-8450399.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('myrrh-royale', 'https://images.pexels.com/photos/8450345/pexels-photo-8450345.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('myrrh-royale', 'https://images.pexels.com/photos/12456283/pexels-photo-12456283.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('bergamot-silk', 'https://images.pexels.com/photos/35658144/pexels-photo-35658144.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('bergamot-silk', 'https://images.pexels.com/photos/35806942/pexels-photo-35806942.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('bergamot-silk', 'https://images.pexels.com/photos/35806939/pexels-photo-35806939.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('bergamot-silk', 'https://images.pexels.com/photos/230778/pexels-photo-230778.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('leather-and-oud', 'https://images.pexels.com/photos/14490634/pexels-photo-14490634.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('leather-and-oud', 'https://images.pexels.com/photos/21926650/pexels-photo-21926650.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('leather-and-oud', 'https://images.pexels.com/photos/21926653/pexels-photo-21926653.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('leather-and-oud', 'https://images.pexels.com/photos/16239693/pexels-photo-16239693.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('jasmine-noir', 'https://images.pexels.com/photos/19954486/pexels-photo-19954486.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('jasmine-noir', 'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('jasmine-noir', 'https://images.pexels.com/photos/8450391/pexels-photo-8450391.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('jasmine-noir', 'https://images.pexels.com/photos/21008941/pexels-photo-21008941.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('vetiver-smoke', 'https://images.pexels.com/photos/15190739/pexels-photo-15190739.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('vetiver-smoke', 'https://images.pexels.com/photos/33295344/pexels-photo-33295344.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('vetiver-smoke', 'https://images.pexels.com/photos/8450207/pexels-photo-8450207.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('vetiver-smoke', 'https://images.pexels.com/photos/8450219/pexels-photo-8450219.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('peche-sauvage', 'https://images.pexels.com/photos/38949831/pexels-photo-38949831.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('peche-sauvage', 'https://images.pexels.com/photos/38949832/pexels-photo-38949832.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('peche-sauvage', 'https://images.pexels.com/photos/35806941/pexels-photo-35806941.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('peche-sauvage', 'https://images.pexels.com/photos/1961786/pexels-photo-1961786.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3),
+  ('musk-imperial', 'https://images.pexels.com/photos/34051691/pexels-photo-34051691.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 0),
+  ('musk-imperial', 'https://images.pexels.com/photos/15097440/pexels-photo-15097440.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 1),
+  ('musk-imperial', 'https://images.pexels.com/photos/10924522/pexels-photo-10924522.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 2),
+  ('musk-imperial', 'https://images.pexels.com/photos/12402366/pexels-photo-12402366.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop', 3)
+) as v(slug, image_url, sort_order)
 join public.products p on p.slug = v.slug
 on conflict (product_id, image_url) do nothing;
 

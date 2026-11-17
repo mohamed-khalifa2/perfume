@@ -1,5 +1,6 @@
 import { AppToaster } from "@/components/app-toaster";
 import { CartDrawer } from "@/components/cart-drawer";
+import { CartHydrator } from "@/components/cart-hydrator";
 import { SearchOverlay } from "@/components/search-overlay";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -10,6 +11,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <CartHydrator />
       <SiteHeader />
       <main className="flex-1 pt-16 md:pt-[calc(var(--spacing-header)+2.25rem)]">
         {children}

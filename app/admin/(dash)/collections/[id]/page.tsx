@@ -1,16 +1,27 @@
 import { notFound, redirect } from "next/navigation";
 
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { AdminNotice } from "@/components/admin/admin-notice";
+import { ImageField } from "@/components/admin/image-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import { uniqueSlug } from "@/lib/admin/slug";
+import {
+  getFormFile,
+  uploadErrorMessage,
+  uploadSiteImage,
+} from "@/lib/admin/upload";
 
 export default async function EditCollectionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; saved?: string }>;
 }) {
   const { id } = await params;
+  const { error, saved } = await searchParams;
   const { supabase } = await requireAdmin();
 
   const { data: collection } = await supabase
@@ -28,17 +39,30 @@ export default async function EditCollectionPage({
     const { supabase: s } = await requireAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
-    const slug = String(formData.get("slug") ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
     const description = String(formData.get("description") ?? "").trim();
-    const image_url = String(formData.get("image_url") ?? "").trim();
     const sort_order = Number(formData.get("sort_order") ?? 0);
     const is_visible = formData.get("is_visible") === "on";
 
-    await s
+    if (!name) {
+      redirect(`/admin/collections/${id}?error=Name%20is%20required.`);
+    }
+
+    let image_url = String(formData.get("image_url") ?? "").trim();
+    const file = getFormFile(formData, "image_file");
+
+    try {
+      if (file) {
+        image_url = await uploadSiteImage(s, file, "collections", name);
+      }
+    } catch (uploadError) {
+      redirect(
+        `/admin/collections/${id}?error=${encodeURIComponent(uploadErrorMessage(uploadError))}`,
+      );
+    }
+
+    const slug = await uniqueSlug(s, "collections", name, id);
+
+    const { error: saveError } = await s
       .from("collections")
       .update({
         name,
@@ -50,7 +74,13 @@ export default async function EditCollectionPage({
       })
       .eq("id", id);
 
-    redirect("/admin/collections");
+    if (saveError) {
+      redirect(
+        `/admin/collections/${id}?error=${encodeURIComponent(saveError.message)}`,
+      );
+    }
+
+    redirect(`/admin/collections/${id}?saved=1`);
   }
 
   async function deleteCollection() {
@@ -65,27 +95,27 @@ export default async function EditCollectionPage({
       <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Edit collection</h1>
 
+      <AdminNotice error={error} saved={saved === "1"} />
+
       <form action={updateCollection} className="mt-10 max-w-2xl space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Name
-            </label>
-            <Input name="name" required defaultValue={collection.name} className="mt-2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-label text-muted">
-              Slug
-            </label>
-            <Input name="slug" required defaultValue={collection.slug} className="mt-2" />
-          </div>
-        </div>
         <div>
           <label className="text-xs uppercase tracking-label text-muted">
-            Image URL
+            Name
           </label>
-          <Input name="image_url" defaultValue={collection.image_url ?? ""} className="mt-2" />
+          <Input name="name" required defaultValue={collection.name} className="mt-2" />
+          <p className="mt-2 text-xs text-muted">
+            Slug: <span className="text-ink">{collection.slug}</span> · updated
+            automatically when the name changes.
+          </p>
         </div>
+
+        <ImageField
+          label="Collection image"
+          aspect="portrait"
+          defaultValue={collection.image_url ?? ""}
+          hint="Used on collection cards and the collection page header."
+        />
+
         <div>
           <label className="text-xs uppercase tracking-label text-muted">
             Description

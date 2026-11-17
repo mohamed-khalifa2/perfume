@@ -10,15 +10,12 @@ import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { formatEgp } from "@/components/ui/price";
 import { useCartStore, MAX_QUANTITY } from "@/lib/cart-store";
 import { cn } from "@/lib/cn";
+import {
+  allVariantsSoldOut,
+  firstInStockVariant,
+  type ProductVariantOption,
+} from "@/lib/product-variants";
 import { useUiStore } from "@/lib/ui-store";
-
-export type ProductVariantOption = {
-  id: string;
-  sizeMl: number;
-  price: number;
-  compareAtPrice: number | null;
-  stock: number;
-};
 
 export type AddToCartPanelProps = {
   productId: string;
@@ -43,10 +40,15 @@ export function AddToCartPanel({
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useUiStore((state) => state.openCart);
 
-  const [activeVariantId, setActiveVariantId] = useState(variants[0]?.id ?? "");
+  const [activeVariantId, setActiveVariantId] = useState(
+    () => firstInStockVariant(variants)?.id ?? variants[0]?.id ?? "",
+  );
   const [quantity, setQuantity] = useState(1);
 
-  const variant = variants.find((v) => v.id === activeVariantId) ?? variants[0];
+  const variant =
+    variants.find((v) => v.id === activeVariantId) ??
+    firstInStockVariant(variants) ??
+    variants[0];
 
   if (!variant) {
     return (
@@ -56,7 +58,8 @@ export function AddToCartPanel({
     );
   }
 
-  const maxQty = Math.min(variant.stock, MAX_QUANTITY);
+  const everyVariantSoldOut = allVariantsSoldOut(variants);
+  const maxQty = Math.max(1, Math.min(variant.stock, MAX_QUANTITY));
   const lowStock = variant.stock > 0 && variant.stock <= 5;
 
   const handleAddToCart = () => {
@@ -130,14 +133,18 @@ export function AddToCartPanel({
                 key={v.id}
                 type="button"
                 disabled={disabled}
+                aria-pressed={active}
+                aria-label={`${v.sizeMl} ml${disabled ? ", out of stock" : ""}`}
+                title={disabled ? `${v.sizeMl} ml — out of stock` : undefined}
                 onClick={() => {
                   setActiveVariantId(v.id);
                   setQuantity(1);
                 }}
                 className={cn(
-                  "inline-flex h-10 items-center justify-center border px-4 text-[11px] uppercase tracking-label transition-colors",
+                  "inline-flex h-10 items-center justify-center border px-4 text-[11px] uppercase tracking-label transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink",
                   active ? "border-ink bg-ink text-cream" : "border-line text-ink",
-                  disabled && "cursor-not-allowed opacity-40",
+                  disabled &&
+                    "cursor-not-allowed border-line text-muted line-through opacity-50 hover:border-line",
                 )}
               >
                 {v.sizeMl} ml
@@ -146,12 +153,20 @@ export function AddToCartPanel({
           })}
         </div>
 
-        {variant.stock <= 0 ? (
-          <p className="mt-3 text-xs text-gold-muted">Out of stock</p>
+        {everyVariantSoldOut ? (
+          <p className="mt-3 text-xs text-gold-muted">
+            Out of stock — all sizes are currently unavailable.
+          </p>
+        ) : variant.stock <= 0 ? (
+          <p className="mt-3 text-xs text-gold-muted">
+            This size is out of stock. Please choose another size.
+          </p>
         ) : lowStock ? (
-          <p className="mt-3 text-xs text-gold-muted">Only {variant.stock} left</p>
+          <p className="mt-3 text-xs text-gold-muted">
+            Only {variant.stock} left in {variant.sizeMl} ml
+          </p>
         ) : (
-          <p className="mt-3 text-xs text-muted">In stock</p>
+          <p className="mt-3 text-xs text-muted">In stock — ready to ship</p>
         )}
       </div>
 
@@ -168,13 +183,16 @@ export function AddToCartPanel({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <Button onClick={handleAddToCart} disabled={variant.stock <= 0}>
-            Add to cart
+          <Button
+            onClick={handleAddToCart}
+            disabled={variant.stock <= 0 || everyVariantSoldOut}
+          >
+            {everyVariantSoldOut ? "Out of stock" : "Add to cart"}
           </Button>
           <Button
             variant="outline"
             onClick={handleBuyNow}
-            disabled={variant.stock <= 0}
+            disabled={variant.stock <= 0 || everyVariantSoldOut}
           >
             Buy now
           </Button>

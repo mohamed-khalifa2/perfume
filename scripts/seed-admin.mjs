@@ -23,8 +23,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   },
 });
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "test@maisonnoir.eg";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "test";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "test@test.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "test123";
 
 async function main() {
   const { data: listData, error: listError } = await supabase.auth.admin.listUsers({

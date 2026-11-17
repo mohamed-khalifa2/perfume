@@ -7,23 +7,9 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { ShopFilters } from "@/components/shop-filters";
 import { ShopPagination } from "@/components/shop-pagination";
 import { createClient } from "@/lib/supabase/server";
+import { getShopProducts } from "@/lib/site-data";
 
 const PAGE_SIZE = 12;
-
-const SEED_PRODUCTS = [
-  { id: "oud-noir", name: "Oud Noir", slug: "oud-noir", brand: "Maison Noir", gender: "men", concentration: "Parfum", scent_family: "Woody", price: 1450, compareAtPrice: 2450, cover_image_url: "https://picsum.photos/seed/oud-noir-cover/900/1200", galleryImage: "https://picsum.photos/seed/oud-noir-gallery-1/900/1200", is_new: true },
-  { id: "velours-rouge", name: "Velours Rouge", slug: "velours-rouge", brand: "Maison Noir", gender: "women", concentration: "EDP", scent_family: "Oriental Floral", price: 1250, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/velours-rouge-cover/900/1200", galleryImage: "https://picsum.photos/seed/velours-rouge-gallery-1/900/1200", is_new: true },
-  { id: "blanc-de-nuit", name: "Blanc de Nuit", slug: "blanc-de-nuit", brand: "Maison Noir", gender: "unisex", concentration: "EDT", scent_family: "Fresh Floral", price: 1150, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/blanc-de-nuit-cover/900/1200", galleryImage: "https://picsum.photos/seed/blanc-de-nuit-gallery-1/900/1200", is_new: false },
-  { id: "amber-empress", name: "Amber Empress", slug: "amber-empress", brand: "Maison Noir", gender: "women", concentration: "Parfum", scent_family: "Amber", price: 2150, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/amber-empress-cover/900/1200", galleryImage: "https://picsum.photos/seed/amber-empress-gallery-1/900/1200", is_new: true },
-  { id: "desert-santal", name: "Desert Santal", slug: "desert-santal", brand: "Maison Noir", gender: "unisex", concentration: "EDP", scent_family: "Woody", price: 1850, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/desert-santal-cover/900/1200", galleryImage: "https://picsum.photos/seed/desert-santal-gallery-1/900/1200", is_new: false },
-  { id: "cairo-nights", name: "Cairo Nights", slug: "cairo-nights", brand: "Maison Noir", gender: "women", concentration: "EDP", scent_family: "Smoky Floral", price: 1850, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/cairo-nights-cover/900/1200", galleryImage: "https://picsum.photos/seed/cairo-nights-gallery-1/900/1200", is_new: true },
-  { id: "tobacco-noir", name: "Tobacco Noir", slug: "tobacco-noir", brand: "Maison Noir", gender: "men", concentration: "Parfum", scent_family: "Amber Woody", price: 2150, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/tobacco-noir-cover/900/1200", galleryImage: "https://picsum.photos/seed/tobacco-noir-gallery-1/900/1200", is_new: false },
-  { id: "fig-and-cedar", name: "Fig & Cedar", slug: "fig-and-cedar", brand: "Maison Noir", gender: "men", concentration: "EDT", scent_family: "Green Woody", price: 1650, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/fig-and-cedar-cover/900/1200", galleryImage: "https://picsum.photos/seed/fig-and-cedar-gallery-1/900/1200", is_new: false },
-  { id: "rose-ivoire", name: "Rose Ivoire", slug: "rose-ivoire", brand: "Maison Noir", gender: "women", concentration: "EDP", scent_family: "Floral", price: 1850, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/rose-ivoire-cover/900/1200", galleryImage: "https://picsum.photos/seed/rose-ivoire-gallery-1/900/1200", is_new: false },
-  { id: "myrrh-royale", name: "Myrrh Royale", slug: "myrrh-royale", brand: "Maison Noir", gender: "unisex", concentration: "Parfum", scent_family: "Resin", price: 2150, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/myrrh-royale-cover/900/1200", galleryImage: "https://picsum.photos/seed/myrrh-royale-gallery-1/900/1200", is_new: true },
-  { id: "bergamot-silk", name: "Bergamot Silk", slug: "bergamot-silk", brand: "Maison Noir", gender: "unisex", concentration: "EDT", scent_family: "Citrus Floral", price: 1650, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/bergamot-silk-cover/900/1200", galleryImage: "https://picsum.photos/seed/bergamot-silk-gallery-1/900/1200", is_new: false },
-  { id: "leather-and-oud", name: "Leather & Oud", slug: "leather-and-oud", brand: "Maison Noir", gender: "men", concentration: "Parfum", scent_family: "Leather", price: 2150, compareAtPrice: null, cover_image_url: "https://picsum.photos/seed/leather-and-oud-cover/900/1200", galleryImage: "https://picsum.photos/seed/leather-and-oud-gallery-1/900/1200", is_new: false },
-] as const;
 
 export default async function ShopPage({
   searchParams,
@@ -41,11 +27,16 @@ export default async function ShopPage({
   const inStock = params.in_stock === "1";
   const page = Math.max(1, Number(params.page) || 1);
 
-  let products = SEED_PRODUCTS.slice();
+  const allProducts = await getShopProducts();
+  let products = allProducts.slice();
 
   if (gender.length) products = products.filter((p) => (gender as string[]).includes(p.gender));
   if (concentration.length) products = products.filter((p) => (concentration as string[]).includes(p.concentration));
-  if (scentFamily.length) products = products.filter((p) => (scentFamily as string[]).includes(p.scent_family));
+  if (scentFamily.length) {
+    products = products.filter(
+      (p) => p.scent_family !== null && (scentFamily as string[]).includes(p.scent_family),
+    );
+  }
   if (q) {
     products = products.filter(
       (p) => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q),
@@ -61,7 +52,13 @@ export default async function ShopPage({
   const start = (page - 1) * PAGE_SIZE;
   const paged = products.slice(start, start + PAGE_SIZE);
 
-  const scentFamilies = Array.from(new Set(SEED_PRODUCTS.map((p) => p.scent_family))).sort();
+  const scentFamilies = Array.from(
+    new Set(
+      allProducts
+        .map((p) => p.scent_family)
+        .filter((family): family is string => Boolean(family)),
+    ),
+  ).sort();
 
   const activeCount =
     gender.length +
@@ -144,6 +141,7 @@ export default async function ShopPage({
                     price={product.price}
                     compareAtPrice={product.compareAtPrice}
                     isNew={product.is_new}
+                    variants={product.variants}
                     priority={index < 4}
                   />
                 ))}
