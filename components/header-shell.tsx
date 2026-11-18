@@ -240,81 +240,69 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
 
       <AnimatePresence>
         {menuOpen ? (
-          <div className="fixed inset-0 z-50 md:hidden">
-            <motion.button
-              key="mobile-menu-backdrop"
-              type="button"
-              aria-label="Close menu"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              onClick={() => setMenuOpen(false)}
-              className="absolute inset-0 size-full bg-ink/60 backdrop-blur-sm"
-            />
-
-            <motion.aside
-              key="mobile-menu-panel"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Site menu"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+          <motion.div
+            key="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 bg-cream md:hidden"
+          >
+            <motion.div
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex h-full w-[86vw] max-w-sm flex-col overflow-y-auto border-r border-line bg-cream text-ink shadow-2xl"
+              className="flex h-full flex-col overflow-y-auto"
             >
-              <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-6">
-                <span className="font-display text-sm uppercase tracking-editorial">
-                  {settings.logo_url ? (
-                    <Image
-                      src={settings.logo_url}
-                      alt={settings.store_name}
-                      loading="eager"
-                      width={160}
-                      height={40}
-                      className="h-7 w-auto object-contain"
-                    />
-                  ) : (
-                    settings.store_name
-                  )}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(false)}
-                  aria-label="Close menu"
-                  className="-mr-2 p-2 transition-opacity hover:opacity-60"
-                >
-                  <X className="size-4" aria-hidden />
-                </button>
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-line">
+                <Container size="lg" className="flex items-center justify-between">
+                  <span className="font-display text-sm uppercase tracking-editorial">
+                    {settings.logo_url ? (
+                      <Image
+                        src={settings.logo_url}
+                        alt={settings.store_name}
+                        loading="eager"
+                        width={160}
+                        height={40}
+                        className="h-7 w-auto object-contain"
+                      />
+                    ) : (
+                      settings.store_name
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(false)}
+                    aria-label="Close menu"
+                    className="-mr-2 p-2 transition-opacity hover:opacity-60"
+                  >
+                    <X className="size-4" aria-hidden />
+                  </button>
+                </Container>
               </div>
 
-              <div className="flex flex-1 flex-col px-6 py-9">
+              <Container size="lg" className="flex flex-1 flex-col py-9">
                 <div className="h-px w-10 bg-gold" />
 
                 <Link
                   href="/shop"
                   onClick={() => setMenuOpen(false)}
-                  className="group mt-8 flex items-center justify-between gap-4 border-b border-line pb-7"
+                  className="group mt-8 border-b border-line pb-7"
                 >
                   <span className="font-display text-xl text-ink transition-colors group-hover:text-gold-muted">
                     Shop all
-                  </span>
-                  <span className="text-[10px] uppercase tracking-label text-gold">
-                    01
                   </span>
                 </Link>
 
                 {collections.length > 0 ? (
                   <div className="border-b border-line py-7">
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="text-[10px] uppercase tracking-label text-gold">
-                        Collections
-                      </p>
-                      <span className="text-[10px] uppercase tracking-label text-muted">
-                        02
-                      </span>
-                    </div>
+                    <p className="text-[10px] uppercase tracking-label text-gold">
+                      Collections
+                    </p>
                     <ul className="mt-5 space-y-3">
                       {collections.map((collection) => (
                         <li key={collection.id}>
@@ -332,18 +320,15 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
                 ) : null}
 
                 <nav className="mt-7 flex flex-col gap-6" aria-label="More pages">
-                  {MOBILE_SECONDARY_LINKS.map((link, index) => (
+                  {MOBILE_SECONDARY_LINKS.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className="group flex items-center justify-between gap-4"
+                      className="group"
                     >
                       <span className="font-display text-lg text-ink transition-colors group-hover:text-gold-muted">
                         {link.label}
-                      </span>
-                      <span className="text-[10px] uppercase tracking-label text-gold">
-                        {String(index + 3).padStart(2, "0")}
                       </span>
                     </Link>
                   ))}
@@ -372,9 +357,9 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
 
                   <SocialLinks settings={settings} className="pt-1" />
                 </div>
-              </div>
-            </motion.aside>
-          </div>
+              </Container>
+            </motion.div>
+          </motion.div>
         ) : null}
       </AnimatePresence>
     </>
@@ -391,7 +376,6 @@ function SocialLinks({
   const links = [
     { href: settings.instagram, label: "Instagram", Icon: Instagram },
     { href: settings.facebook, label: "Facebook", Icon: Facebook },
-    { href: settings.tiktok, label: "TikTok", Icon: null },
   ].filter((link) => Boolean(link.href));
 
   if (links.length === 0) return null;
