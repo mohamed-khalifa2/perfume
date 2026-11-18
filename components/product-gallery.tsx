@@ -84,7 +84,7 @@ export function ProductGallery({ images }: { images: GalleryImage[] }) {
           </AnimatePresence>
         </button>
 
-        <div className="flex gap-3 overflow-x-auto pb-1">
+        <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
           {images.map((image, index) => (
             <button
               key={image.url}
