@@ -68,7 +68,6 @@ create table if not exists public.site_settings (
   address                 text,
   instagram               text,
   facebook                text,
-  tiktok                  text,
   footer_text             text,
   free_shipping_threshold numeric(12,2),
   seo_title               text,
@@ -752,7 +751,7 @@ create policy "site-media admin delete" on storage.objects
 -- --- Site settings ---------------------------------------------------------
 insert into public.site_settings (
   id, store_name, tagline, logo_url, email, phone, whatsapp, address,
-  instagram, facebook, tiktok, footer_text, free_shipping_threshold,
+  instagram, facebook, footer_text, free_shipping_threshold,
   seo_title, seo_description
 )
 values (
@@ -766,7 +765,6 @@ values (
   '12 Talaat Harb Street, Downtown, Cairo, Egypt',
   'https://instagram.com/maisonnoir',
   'https://facebook.com/maisonnoir',
-  'https://tiktok.com/@maisonnoir',
   'Maison Noir, composed in Cairo, shipped across Egypt.',
   3000,
   'Maison Noir, Luxury Perfume House in Egypt',
@@ -782,7 +780,6 @@ on conflict (id) do update set
   address = excluded.address,
   instagram = excluded.instagram,
   facebook = excluded.facebook,
-  tiktok = excluded.tiktok,
   footer_text = excluded.footer_text,
   free_shipping_threshold = excluded.free_shipping_threshold,
   seo_title = excluded.seo_title,

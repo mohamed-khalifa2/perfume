@@ -286,12 +286,10 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
               </div>
 
               <Container size="lg" className="flex flex-1 flex-col py-9">
-                <div className="h-px w-10 bg-gold" />
-
                 <Link
                   href="/shop"
                   onClick={() => setMenuOpen(false)}
-                  className="group mt-8 border-b border-line pb-7"
+                  className="group border-b border-line pb-7"
                 >
                   <span className="font-display text-xl text-ink transition-colors group-hover:text-gold-muted">
                     Shop all

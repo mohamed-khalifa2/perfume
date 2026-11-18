@@ -72,7 +72,6 @@ export type Database = {
           address: string | null;
           instagram: string | null;
           facebook: string | null;
-          tiktok: string | null;
           footer_text: string | null;
           free_shipping_threshold: number | null;
           seo_title: string | null;
@@ -89,7 +88,6 @@ export type Database = {
           address?: string | null;
           instagram?: string | null;
           facebook?: string | null;
-          tiktok?: string | null;
           footer_text?: string | null;
           free_shipping_threshold?: number | null;
           seo_title?: string | null;
@@ -106,7 +104,6 @@ export type Database = {
           address?: string | null;
           instagram?: string | null;
           facebook?: string | null;
-          tiktok?: string | null;
           footer_text?: string | null;
           free_shipping_threshold?: number | null;
           seo_title?: string | null;

@@ -38,7 +38,6 @@ export default async function AdminSettingsPage({
     const address = String(formData.get("address") ?? "").trim();
     const instagram = String(formData.get("instagram") ?? "").trim();
     const facebook = String(formData.get("facebook") ?? "").trim();
-    const tiktok = String(formData.get("tiktok") ?? "").trim();
     const footer_text = String(formData.get("footer_text") ?? "").trim();
     const free_shipping_threshold = formData.get("free_shipping_threshold")
       ? Number(formData.get("free_shipping_threshold"))
@@ -74,7 +73,6 @@ export default async function AdminSettingsPage({
       address: address || null,
       instagram: instagram || null,
       facebook: facebook || null,
-      tiktok: tiktok || null,
       footer_text: footer_text || null,
       free_shipping_threshold,
       seo_title: seo_title || null,
@@ -188,11 +186,7 @@ export default async function AdminSettingsPage({
               placeholder="Facebook URL"
               defaultValue={settings?.facebook ?? ""}
             />
-            <Input
-              name="tiktok"
-              placeholder="TikTok URL"
-              defaultValue={settings?.tiktok ?? ""}
-            />
+            
           </div>
         </div>
 

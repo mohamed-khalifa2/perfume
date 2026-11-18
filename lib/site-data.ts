@@ -43,7 +43,6 @@ const FALLBACK_SETTINGS: SiteSettings = {
   address: null,
   instagram: null,
   facebook: null,
-  tiktok: null,
   footer_text: null,
   free_shipping_threshold: 0,
   seo_title: null,
