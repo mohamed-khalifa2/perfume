@@ -13,7 +13,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
     <div className="flex min-h-screen flex-col">
       <CartHydrator />
       <SiteHeader />
-      <main className="flex-1 pt-16 md:pt-[calc(var(--spacing-header)+2.25rem)]">
+      <main className="flex-1 pt-[var(--spacing-header)] md:pt-[calc(var(--spacing-header)+1rem)]">
         {children}
       </main>
       <SiteFooter />

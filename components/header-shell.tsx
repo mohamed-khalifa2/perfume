@@ -35,6 +35,11 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
+const MOBILE_SECONDARY_LINKS = [
+  { href: "/contact", label: "Contact" },
+  { href: "/about", label: "About" },
+];
+
 export function HeaderShell({ settings, collections }: HeaderShellProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -76,7 +81,7 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
   const freeShippingMessage =
     settings.free_shipping_threshold && settings.free_shipping_threshold > 0
       ? `Complimentary shipping over ${formatEgp(settings.free_shipping_threshold)}`
-      : null;
+      : "Complimentary shipping on qualifying orders";
 
   return (
     <>
@@ -88,41 +93,10 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
             : "border-b border-line bg-cream/90 text-ink backdrop-blur-md",
         )}
       >
-        <div
-          className={cn(
-            "hidden border-b md:block",
-            transparent ? "border-cream/15" : "border-line",
-          )}
-        >
+        <div className="border-b border-ink bg-ink text-cream">
           <Container size="lg">
-            <div className="flex h-9 items-center justify-between gap-8 text-[11px] uppercase tracking-label">
-              <div className="flex items-center gap-8">
-                {settings.phone ? (
-                  <a
-                    href={`tel:${settings.phone}`}
-                    className="flex items-center gap-2 transition-opacity hover:opacity-70"
-                  >
-                    <Phone className="size-3" aria-hidden />
-                    {settings.phone}
-                  </a>
-                ) : null}
-
-                {settings.email ? (
-                  <a
-                    href={`mailto:${settings.email}`}
-                    className="flex items-center gap-2 transition-opacity hover:opacity-70"
-                  >
-                    <Mail className="size-3" aria-hidden />
-                    {settings.email}
-                  </a>
-                ) : null}
-              </div>
-
-              {freeShippingMessage ? (
-                <p className="transition-opacity hover:opacity-70">
-                  {freeShippingMessage}
-                </p>
-              ) : null}
+            <div className="flex h-9 items-center justify-center text-center text-[10px] uppercase tracking-label sm:text-[11px]">
+              <p>{freeShippingMessage}</p>
             </div>
           </Container>
         </div>
@@ -266,74 +240,88 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
 
       <AnimatePresence>
         {menuOpen ? (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 bg-cream md:hidden"
-          >
-            <motion.div
-              initial={{ y: "-100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "-100%" }}
+          <div className="fixed inset-0 z-50 md:hidden">
+            <motion.button
+              key="mobile-menu-backdrop"
+              type="button"
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setMenuOpen(false)}
+              className="absolute inset-0 size-full bg-ink/60 backdrop-blur-sm"
+            />
+
+            <motion.aside
+              key="mobile-menu-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site menu"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="flex h-full flex-col overflow-y-auto"
+              className="relative flex h-full w-[86vw] max-w-sm flex-col overflow-y-auto border-r border-line bg-cream text-ink shadow-2xl"
             >
-              <div className="flex h-16 items-center justify-between border-b border-line">
-                <Container size="lg" className="flex items-center justify-between">
-                  <span className="font-display text-base uppercase tracking-editorial text-ink">
-                    {settings.logo_url ? (
-                      <Image
-                        src={settings.logo_url}
-                        alt={settings.store_name}
-                        loading="eager"
-                        width={160}
-                        height={40}
-                        className="h-8 w-auto object-contain"
-                      />
-                    ) : (
-                      settings.store_name
-                    )}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setMenuOpen(false)}
-                    aria-label="Close menu"
-                    className="-mr-2 p-2 text-ink"
-                  >
-                    <X className="size-5" aria-hidden />
-                  </button>
-                </Container>
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-6">
+                <span className="font-display text-sm uppercase tracking-editorial">
+                  {settings.logo_url ? (
+                    <Image
+                      src={settings.logo_url}
+                      alt={settings.store_name}
+                      loading="eager"
+                      width={160}
+                      height={40}
+                      className="h-7 w-auto object-contain"
+                    />
+                  ) : (
+                    settings.store_name
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Close menu"
+                  className="-mr-2 p-2 transition-opacity hover:opacity-60"
+                >
+                  <X className="size-4" aria-hidden />
+                </button>
               </div>
 
-              <Container size="lg" className="flex flex-1 flex-col py-10">
-                <nav className="flex flex-col">
-                  {NAV_LINKS.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
-                      className="border-b border-line py-5 font-display text-3xl text-ink"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
+              <div className="flex flex-1 flex-col px-6 py-9">
+                <div className="h-px w-10 bg-gold" />
+
+                <Link
+                  href="/shop"
+                  onClick={() => setMenuOpen(false)}
+                  className="group mt-8 flex items-center justify-between gap-4 border-b border-line pb-7"
+                >
+                  <span className="font-display text-xl text-ink transition-colors group-hover:text-gold-muted">
+                    Shop all
+                  </span>
+                  <span className="text-[10px] uppercase tracking-label text-gold">
+                    01
+                  </span>
+                </Link>
 
                 {collections.length > 0 ? (
-                  <div className="mt-10">
-                    <p className="text-[11px] uppercase tracking-label text-gold">
-                      Collections
-                    </p>
-                    <ul className="mt-5 grid grid-cols-2 gap-y-3">
+                  <div className="border-b border-line py-7">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="text-[10px] uppercase tracking-label text-gold">
+                        Collections
+                      </p>
+                      <span className="text-[10px] uppercase tracking-label text-muted">
+                        02
+                      </span>
+                    </div>
+                    <ul className="mt-5 space-y-3">
                       {collections.map((collection) => (
                         <li key={collection.id}>
                           <Link
                             href={`/collections/${collection.slug}`}
                             onClick={() => setMenuOpen(false)}
-                            className="text-[11px] uppercase tracking-label text-ink transition-opacity hover:opacity-70"
+                            className="block text-[12px] uppercase tracking-label text-ink transition-colors hover:text-gold-muted"
                           >
                             {collection.name}
                           </Link>
@@ -343,11 +331,29 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
                   </div>
                 ) : null}
 
-                <div className="mt-auto flex flex-col gap-3 pt-12">
+                <nav className="mt-7 flex flex-col gap-6" aria-label="More pages">
+                  {MOBILE_SECONDARY_LINKS.map((link, index) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="group flex items-center justify-between gap-4"
+                    >
+                      <span className="font-display text-lg text-ink transition-colors group-hover:text-gold-muted">
+                        {link.label}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-label text-gold">
+                        {String(index + 3).padStart(2, "0")}
+                      </span>
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-auto space-y-3 border-t border-line pt-8">
                   {settings.phone ? (
                     <a
                       href={`tel:${settings.phone}`}
-                      className="flex items-center gap-2 text-[11px] uppercase tracking-label text-muted"
+                      className="flex items-center gap-2 text-[10px] uppercase tracking-label text-muted"
                     >
                       <Phone className="size-3" aria-hidden />
                       {settings.phone}
@@ -357,18 +363,18 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
                   {settings.email ? (
                     <a
                       href={`mailto:${settings.email}`}
-                      className="flex items-center gap-2 text-[11px] uppercase tracking-label text-muted"
+                      className="flex items-center gap-2 text-[10px] uppercase tracking-label text-muted"
                     >
                       <Mail className="size-3" aria-hidden />
                       {settings.email}
                     </a>
                   ) : null}
 
-                  <SocialLinks settings={settings} className="mt-3" />
+                  <SocialLinks settings={settings} className="pt-1" />
                 </div>
-              </Container>
-            </motion.div>
-          </motion.div>
+              </div>
+            </motion.aside>
+          </div>
         ) : null}
       </AnimatePresence>
     </>
