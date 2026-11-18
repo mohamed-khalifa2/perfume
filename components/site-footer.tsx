@@ -29,7 +29,6 @@ export async function SiteFooter() {
   const socials = [
     { href: settings.instagram, label: "Instagram", Icon: Instagram },
     { href: settings.facebook, label: "Facebook", Icon: Facebook },
-    { href: settings.tiktok, label: "TikTok", Icon: null },
   ].filter((social) => Boolean(social.href));
 
   return (
