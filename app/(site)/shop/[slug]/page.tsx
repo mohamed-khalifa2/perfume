@@ -85,7 +85,7 @@ export async function generateMetadata({
     title: name,
     description,
     openGraph: {
-      title: `${name} — ${brand}`,
+      title: `${name} | ${brand}`,
       description,
     },
   };
@@ -146,7 +146,7 @@ export default async function ProductPage({
             <ProductGallery
               images={product.images.map((url, index) => ({
                 url,
-                alt: `${product.name} — image ${index + 1}`,
+                alt: `${product.name}, image ${index + 1}`,
               }))}
             />
 

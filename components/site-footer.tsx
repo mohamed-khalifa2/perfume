@@ -51,7 +51,7 @@ export async function SiteFooter() {
               href="/contact"
               className="mt-10 inline-flex items-center gap-4 border border-cream/25 px-7 py-4 text-[11px] uppercase tracking-label transition-colors hover:bg-cream hover:text-ink"
             >
-              Join the list — new compositions by email
+              Join the list for new compositions by email
             </Link>
           </div>
 
@@ -168,7 +168,7 @@ export async function SiteFooter() {
           <div className="flex flex-col gap-3 py-7 text-[11px] uppercase tracking-label text-cream/50 md:flex-row md:items-center md:justify-between">
             <span>
               © {new Date().getFullYear()} {settings.store_name}
-              {settings.footer_text ? ` — ${settings.footer_text}` : ""}
+              {settings.footer_text ? ` ${settings.footer_text}` : ""}
             </span>
             <span>Cash on delivery · Visa · Mastercard</span>
           </div>

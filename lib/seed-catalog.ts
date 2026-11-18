@@ -74,7 +74,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     slug: "blanc-de-nuit",
     name: "Blanc de Nuit",
     brand: "Maison Noir",
-    description: "A luminous white floral for the hours after midnight — neroli over clean musk.",
+    description: "A luminous white floral for the hours after midnight, neroli over clean musk.",
     gender: "unisex",
     concentration: "EDT",
     topNotes: ["Bergamot","Lemon","Mint"],

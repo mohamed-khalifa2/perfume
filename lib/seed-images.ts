@@ -202,7 +202,7 @@ export function displayProductImage(
   return isRandomPlaceholder(url) ? productImageUrl(slug, index) : url!;
 }
 
-/** Gallery images stay absent when an admin removes them — no invented art. */
+/** Gallery images stay absent when an admin removes them, with no invented art. */
 export function displayOptionalProductImage(
   slug: string,
   url: string | null | undefined,

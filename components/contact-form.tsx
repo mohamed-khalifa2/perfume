@@ -29,7 +29,7 @@ export function ContactForm() {
   }, [state]);
 
   return (
-    <form ref={formRef} action={formAction} method="post" className="space-y-6">
+    <form ref={formRef} action={formAction} className="space-y-6">
       <div>
         <label
           htmlFor="contact-name"

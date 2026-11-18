@@ -76,7 +76,7 @@ export function AddToCartPanel({
       quantity: qty,
     });
     toast.success("Added to bag", {
-      description: `${productName} — ${variant.sizeMl} ml`,
+      description: `${productName}, ${variant.sizeMl} ml`,
     });
     openCart();
   };
@@ -135,7 +135,7 @@ export function AddToCartPanel({
                 disabled={disabled}
                 aria-pressed={active}
                 aria-label={`${v.sizeMl} ml${disabled ? ", out of stock" : ""}`}
-                title={disabled ? `${v.sizeMl} ml — out of stock` : undefined}
+                title={disabled ? `${v.sizeMl} ml, out of stock` : undefined}
                 onClick={() => {
                   setActiveVariantId(v.id);
                   setQuantity(1);
@@ -155,7 +155,7 @@ export function AddToCartPanel({
 
         {everyVariantSoldOut ? (
           <p className="mt-3 text-xs text-gold-muted">
-            Out of stock — all sizes are currently unavailable.
+            Out of stock. All sizes are currently unavailable.
           </p>
         ) : variant.stock <= 0 ? (
           <p className="mt-3 text-xs text-gold-muted">
@@ -166,7 +166,7 @@ export function AddToCartPanel({
             Only {variant.stock} left in {variant.sizeMl} ml
           </p>
         ) : (
-          <p className="mt-3 text-xs text-muted">In stock — ready to ship</p>
+          <p className="mt-3 text-xs text-muted">In stock. Ready to ship.</p>
         )}
       </div>
 
@@ -200,7 +200,7 @@ export function AddToCartPanel({
       </div>
 
       <div className="grid gap-3 border-t border-line pt-6 text-sm text-muted">
-        <p>Delivery across Egypt — Cash on delivery available.</p>
+        <p>Delivery across Egypt. Cash on delivery available.</p>
         <p>Free returns on unopened items within 14 days.</p>
       </div>
     </div>

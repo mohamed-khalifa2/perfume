@@ -84,7 +84,7 @@ export default async function AdminProductsPage() {
                       ? minPrice === maxPrice
                         ? formatEgp(minPrice)
                         : `${formatEgp(minPrice)} – ${formatEgp(maxPrice)}`
-                      : "—"}
+                      : "N/A"}
                   </td>
                   <td className="py-4 pr-6 text-xs uppercase tracking-label text-muted">
                     {product.is_visible ? "Visible" : "Hidden"}

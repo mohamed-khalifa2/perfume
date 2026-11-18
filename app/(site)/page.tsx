@@ -65,7 +65,7 @@ export default async function HomePage() {
   const threshold = settings.free_shipping_threshold ?? 0;
 
   const brandStory =
-    "Maison Noir is a study in restraint. Each composition is built slowly — an interplay of light and shadow, resin and bloom — distilled into something quietly enduring. Crafted in small batches, designed to linger.";
+    "Maison Noir is a study in restraint. Each composition is built slowly through an interplay of light and shadow, resin and bloom, then distilled into something quietly enduring. Crafted in small batches, designed to linger.";
 
   const displayCollections =
     collections.length > 0
@@ -356,7 +356,7 @@ export default async function HomePage() {
               {
                 label: "Heart",
                 title: "The soul",
-                body: "The core of the composition — florals, spices or resins that give it identity.",
+                body: "The core of the composition: florals, spices or resins that give it identity.",
               },
               {
                 label: "Base",

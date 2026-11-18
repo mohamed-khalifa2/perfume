@@ -90,7 +90,7 @@ export default async function CollectionPage({
         name: slug === "best-sellers" ? "Best Sellers" : slug.charAt(0).toUpperCase() + slug.slice(1),
         description:
           slug === "men"
-            ? "Compositions for him — oud, leather, tobacco and smoke."
+            ? "Compositions for him: oud, leather, tobacco and smoke."
             : slug === "women"
               ? "Florals, resins and soft musks."
               : slug === "unisex"

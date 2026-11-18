@@ -12,7 +12,7 @@ import { getSiteSettings } from "@/lib/site-data";
 export const metadata = {
   title: "Our story",
   description:
-    "Maison Noir is a study in restraint — small-batch perfumery composed in Cairo.",
+    "Maison Noir is a study in restraint, small-batch perfumery composed in Cairo.",
 };
 
 const PRINCIPLES = [
@@ -29,7 +29,7 @@ const PRINCIPLES = [
   {
     number: "03",
     title: "Made to linger",
-    body: "A scent should stay with you quietly, not announce you. Our compositions are designed for closeness — a trail noticed only by those who come near.",
+    body: "A scent should stay with you quietly, not announce you. Our compositions are designed for closeness, a trail noticed only by those who come near.",
   },
 ];
 
@@ -78,7 +78,7 @@ export default async function AboutPage() {
                 material and every decision.
               </p>
               <p>
-                Our compositions sit between light and shadow — resin against
+                Our compositions sit between light and shadow: resin against
                 bloom, smoke against skin. Each one is allowed to develop at its
                 own pace, then worn to be discovered slowly rather than
                 announced all at once.

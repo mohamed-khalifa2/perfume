@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     default: "Maison Noir",
-    template: "%s — Maison Noir",
+    template: "%s | Maison Noir",
   },
   description: "A luxury perfume house of composed, editorial fragrances.",
 };

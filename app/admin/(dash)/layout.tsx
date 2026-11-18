@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             href="/admin"
             className="font-display text-base uppercase tracking-editorial text-ink"
           >
-            Maison Noir — Admin
+            Maison Noir Admin
           </Link>
           <Link
             href="/"

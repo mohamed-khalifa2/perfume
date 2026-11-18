@@ -46,7 +46,7 @@ export function ProductCardQuickAdd({
     });
 
     toast.success("Added to bag", {
-      description: sizeMl ? `${productName} — ${sizeMl} ml` : productName,
+      description: sizeMl ? `${productName}, ${sizeMl} ml` : productName,
     });
     openCart();
   };

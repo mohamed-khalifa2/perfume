@@ -1,5 +1,5 @@
 -- =============================================================================
--- Maison Noir — Luxury Perfume House
+-- Maison Noir, Luxury Perfume House
 -- Full database schema, RLS policies, storage and seed data.
 --
 -- Run in the Supabase SQL editor (or `supabase db push`).
@@ -265,7 +265,7 @@ grant execute on function public.is_admin() to authenticated, service_role;
 --
 --   The client only sends { variant_id, quantity } pairs plus customer details.
 --   Every price, discount and shipping fee is read from the database inside this
---   function — client supplied amounts are never trusted.
+--   function, so client supplied amounts are never trusted.
 --
 --   The whole function body runs inside a single transaction (a PL/pgSQL
 --   function call is atomic): variant rows are locked FOR UPDATE, stock is
@@ -712,7 +712,7 @@ grant all on public.orders, public.order_items, public.coupons, public.admins, p
 grant all on public.orders, public.order_items, public.coupons, public.admins, public.login_attempts to service_role;
 
 -- -----------------------------------------------------------------------------
--- 7. STORAGE — public bucket "site-media", public read, admin only write
+-- 7. STORAGE: public bucket "site-media", public read, admin only write
 -- -----------------------------------------------------------------------------
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -767,9 +767,9 @@ values (
   'https://instagram.com/maisonnoir',
   'https://facebook.com/maisonnoir',
   'https://tiktok.com/@maisonnoir',
-  'Maison Noir — composed in Cairo, shipped across Egypt.',
+  'Maison Noir, composed in Cairo, shipped across Egypt.',
   3000,
-  'Maison Noir — Luxury Perfume House in Egypt',
+  'Maison Noir, Luxury Perfume House in Egypt',
   'Small-batch eaux de parfum and extraits, blended in Cairo and shipped across Egypt. Cash on delivery available.'
 )
 on conflict (id) do update set
@@ -809,7 +809,7 @@ on conflict (id) do update set
 insert into public.collections (name, slug, description, image_url, sort_order, is_visible)
 select v.name, v.slug, v.description, v.image_url, v.sort_order, true
 from (values
-  ('Men',            'men',          'Compositions for him — oud, leather, tobacco and smoke.', 'https://images.pexels.com/photos/32645074/pexels-photo-32645074.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 1),
+  ('Men',            'men',          'Compositions for him: oud, leather, tobacco and smoke.', 'https://images.pexels.com/photos/32645074/pexels-photo-32645074.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 1),
   ('Women',          'women',        'Florals, resins and soft musks.',                          'https://images.pexels.com/photos/32630385/pexels-photo-32630385.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 2),
   ('Unisex',         'unisex',       'Shared signatures, made to be worn by anyone.',             'https://images.pexels.com/photos/13875783/pexels-photo-13875783.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 3),
   ('Best Sellers',   'best-sellers', 'The house favourites, chosen by our clients.',               'https://images.pexels.com/photos/35930230/pexels-photo-35930230.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop', 4)
@@ -867,7 +867,7 @@ from (values
    'Oriental Floral', true, true, 2),
 
   ('Blanc de Nuit', 'blanc-de-nuit', 'Maison Noir',
-   'A luminous white floral for the hours after midnight — neroli over clean musk.',
+   'A luminous white floral for the hours after midnight, neroli over clean musk.',
    'unisex', 'EDT',
    array['Bergamot', 'Lemon', 'Mint'], array['Neroli', 'Lily of the Valley'], array['White Musk', 'Cedar'],
    'Fresh Floral', true, false, 3),
