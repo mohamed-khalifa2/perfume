@@ -52,7 +52,29 @@ export function ProductCard({
 
   return (
     <article className={cn("group flex flex-col", className)}>
-      <div className="relative aspect-3/4 overflow-hidden bg-cream-deep">
+      <div className="order-2 mt-4 flex flex-col gap-1.5">
+        {brand ? (
+          <p className="text-[11px] uppercase tracking-label text-muted">{brand}</p>
+        ) : null}
+
+        <h3 className="font-display text-lg leading-snug text-ink">
+          <Link
+            href={`/shop/${slug}`}
+            className="transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
+          >
+            {name}
+          </Link>
+        </h3>
+
+        <Price
+          amount={displayPrice}
+          compareAt={displayCompareAt}
+          size="sm"
+          prefix="from"
+        />
+      </div>
+
+      <div className="relative order-1 aspect-3/4 overflow-hidden bg-cream-deep">
         <Link
           href={`/shop/${slug}`}
           className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
@@ -99,28 +121,6 @@ export function ProductCard({
             disabled={soldOut}
           />
         </div>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-1.5">
-        {brand ? (
-          <p className="text-[11px] uppercase tracking-label text-muted">{brand}</p>
-        ) : null}
-
-        <h3 className="font-display text-lg leading-snug text-ink">
-          <Link
-            href={`/shop/${slug}`}
-            className="transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
-          >
-            {name}
-          </Link>
-        </h3>
-
-        <Price
-          amount={displayPrice}
-          compareAt={displayCompareAt}
-          size="sm"
-          prefix="from"
-        />
       </div>
     </article>
   );

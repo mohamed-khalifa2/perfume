@@ -16,7 +16,6 @@ export default async function ShopPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const gender = Array.isArray(params.gender) ? params.gender : params.gender ? [params.gender] : [];
   const concentration = Array.isArray(params.concentration) ? params.concentration : params.concentration ? [params.concentration] : [];
   const scentFamily = Array.isArray(params.scent_family) ? params.scent_family : params.scent_family ? [params.scent_family] : [];
   const size = Array.isArray(params.size) ? params.size : params.size ? [params.size] : [];
@@ -29,12 +28,22 @@ export default async function ShopPage({
   const allProducts = await getShopProducts();
   let products = allProducts.slice();
 
-  if (gender.length) products = products.filter((p) => (gender as string[]).includes(p.gender));
   if (concentration.length) products = products.filter((p) => (concentration as string[]).includes(p.concentration));
+  if (collection) products = products.filter((p) => p.collectionSlugs.includes(collection));
   if (scentFamily.length) {
     products = products.filter(
       (p) => p.scent_family !== null && (scentFamily as string[]).includes(p.scent_family),
     );
+  }
+  const selectedSizes = (size as string[]).map(Number).filter(Number.isFinite);
+  if (selectedSizes.length) {
+    products = products.filter((p) =>
+      p.variants.some(
+        (variant) => selectedSizes.includes(variant.sizeMl) && (!inStock || variant.stock > 0),
+      ),
+    );
+  } else if (inStock) {
+    products = products.filter((p) => p.variants.some((variant) => variant.stock > 0));
   }
   if (q) {
     products = products.filter(
@@ -72,7 +81,6 @@ export default async function ShopPage({
   ).sort();
 
   const activeCount =
-    gender.length +
     concentration.length +
     scentFamily.length +
     size.length +
@@ -127,7 +135,7 @@ export default async function ShopPage({
                 {total} result{total === 1 ? "" : "s"}
               </p>
               <Suspense fallback={null}>
-                <ActiveFilterChips />
+                <ActiveFilterChips collections={collections} />
               </Suspense>
             </div>
 

@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 
 import { ProductCard } from "@/components/product-card";
 import { ShopPagination } from "@/components/shop-pagination";
-import { ShopProductSkeleton } from "@/components/shop-results-skeleton";
+import { ProductGridSkeleton } from "@/components/ui/skeletons";
 import type { ProductVariantOption } from "@/lib/product-variants";
 
 export type ShopResultProduct = {
@@ -42,7 +42,7 @@ export function ShopResults({ products, page, totalPages }: ShopResultsProps) {
   return (
     <>
       {isPending ? (
-        <ShopProductSkeleton count={products.length || 12} />
+        <ProductGridSkeleton count={products.length || 12} />
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center gap-4 border border-line py-16 text-center">
           <p className="font-display text-xl text-ink">No fragrances found</p>

@@ -61,7 +61,9 @@ export default async function CollectionPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const displayProducts = (await getShopProducts()).slice(0, 6);
+  const displayProducts = (await getShopProducts())
+    .filter((product) => product.collectionSlugs.includes(slug))
+    .slice(0, 6);
 
   let collection: { name: string; description: string | null; image_url: string | null } | null = null;
   try {
@@ -102,7 +104,21 @@ export default async function CollectionPage({
   return (
     <div className="pb-24">
       <section className="relative overflow-hidden">
-        <div className="relative aspect-[16/9] min-h-[60vh]">
+        <Container size="lg" className="absolute inset-0 z-10 flex items-end pb-16">
+          <div className="max-w-2xl">
+            <p className="text-[11px] uppercase tracking-label text-gold">Collection</p>
+            <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl lg:text-6xl">
+              {displayCollection.name}
+            </h1>
+            {displayCollection.description ? (
+              <p className="mt-4 text-base text-cream/80">
+                {displayCollection.description}
+              </p>
+            ) : null}
+          </div>
+        </Container>
+
+        <div className="relative z-0 aspect-[16/9] min-h-[60vh]">
           {displayCollection.image_url ? (
             <Image
               src={displayCollection.image_url}
@@ -118,20 +134,6 @@ export default async function CollectionPage({
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
         </div>
-
-        <Container size="lg" className="absolute inset-0 flex items-end pb-16">
-          <div className="max-w-2xl">
-            <p className="text-[11px] uppercase tracking-label text-gold">Collection</p>
-            <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl lg:text-6xl">
-              {displayCollection.name}
-            </h1>
-            {displayCollection.description ? (
-              <p className="mt-4 text-base text-cream/80">
-                {displayCollection.description}
-              </p>
-            ) : null}
-          </div>
-        </Container>
       </section>
 
       <Container size="lg" className="mt-16">
@@ -140,24 +142,30 @@ export default async function CollectionPage({
           title="Curated for this collection"
         />
 
-        <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-          {displayProducts.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              slug={product.slug}
-              brand={product.brand}
-              coverImage={product.cover_image_url}
-              galleryImage={product.galleryImage}
-              price={product.price}
-              compareAtPrice={product.compareAtPrice}
-              isNew={product.is_new}
-              variants={product.variants}
-              eager={index < 2}
-            />
-          ))}
-        </div>
+        {displayProducts.length === 0 ? (
+          <div className="mt-12 border border-line px-6 py-16 text-center">
+            <p className="font-display text-xl text-ink">No fragrances in this collection yet</p>
+          </div>
+        ) : (
+          <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {displayProducts.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                slug={product.slug}
+                brand={product.brand}
+                coverImage={product.cover_image_url}
+                galleryImage={product.galleryImage}
+                price={product.price}
+                compareAtPrice={product.compareAtPrice}
+                isNew={product.is_new}
+                variants={product.variants}
+                eager={index < 2}
+              />
+            ))}
+          </div>
+        )}
       </Container>
     </div>
   );

@@ -7,12 +7,6 @@ import { useState, useTransition } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
-const GENDERS = [
-  { value: "men", label: "Men" },
-  { value: "women", label: "Women" },
-  { value: "unisex", label: "Unisex" },
-];
-
 const CONCENTRATIONS = [
   { value: "EDP", label: "Eau de Parfum" },
   { value: "EDT", label: "Eau de Toilette" },
@@ -165,6 +159,8 @@ export function ShopFilters({
     });
   };
 
+  const inStockActive = searchParams.get("in_stock") === "1";
+
   const content = (
     <div className={cn("flex flex-col", className)}>
       <div className="flex items-center justify-between">
@@ -209,29 +205,6 @@ export function ShopFilters({
           </div>
         </form>
       </div>
-
-      <FilterSection title="Gender">
-        {GENDERS.map((gender) => {
-          const active = searchParams.getAll("gender").includes(gender.value);
-          return (
-            <button
-              key={gender.value}
-              type="button"
-              onClick={() => toggle("gender", gender.value)}
-              className={cn(
-                "flex items-center justify-between text-sm",
-                active ? "text-ink" : "text-muted transition-colors hover:text-ink",
-              )}
-            >
-              {gender.label}
-              <FilterStateIcon
-                pending={isKeyPending(`gender:${gender.value}`)}
-                active={active}
-              />
-            </button>
-          );
-        })}
-      </FilterSection>
 
       <FilterSection title="Concentration">
         {CONCENTRATIONS.map((item) => {
@@ -327,6 +300,23 @@ export function ShopFilters({
             </button>
           );
         })}
+      </FilterSection>
+
+      <FilterSection title="Availability">
+        <button
+          type="button"
+          onClick={() => setSingle("in_stock", inStockActive ? null : "1")}
+          className={cn(
+            "flex items-center justify-between text-sm",
+            inStockActive ? "text-ink" : "text-muted transition-colors hover:text-ink",
+          )}
+        >
+          In stock
+          <FilterStateIcon
+            pending={isKeyPending("in_stock:1")}
+            active={inStockActive}
+          />
+        </button>
       </FilterSection>
 
       <FilterSection title="Sort">

@@ -107,6 +107,31 @@ export default async function HomePage() {
     <div className="-mt-16 md:-mt-[calc(var(--spacing-header)+2.25rem)]">
       {/* Hero */}
       <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+        <Container size="lg" className="relative z-10 pb-28 md:pb-24">
+          <div className="max-w-3xl">
+            <p className="text-[11px] uppercase tracking-label text-gold">
+              {settings.store_name}
+            </p>
+
+            <h1 className="mt-6 whitespace-pre-line font-display text-5xl leading-[0.98] text-cream sm:text-6xl lg:text-8xl">
+              {headline}
+            </h1>
+
+            <p className="mt-8 max-w-xl text-base leading-relaxed text-cream/80">
+              {subheadline}
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link
+                href={ctaLink}
+                className={cn(buttonVariants({ variant: "solid" }))}
+              >
+                {ctaLabel}
+              </Link>
+            </div>
+          </div>
+        </Container>
+
         <Image
           src={heroImage}
           alt={headline.replace("\n", " ")}
@@ -114,45 +139,12 @@ export default async function HomePage() {
           loading="eager"
           fetchPriority="high"
           sizes="100vw"
-          className="object-cover"
+          className="z-0 object-cover"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
 
-        <Container size="lg" className="relative pb-28 md:pb-24">
-          <div className="max-w-3xl">
-            <FadeIn distance={18}>
-              <p className="text-[11px] uppercase tracking-label text-gold">
-                {settings.store_name}
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.12} distance={24}>
-              <h1 className="mt-6 whitespace-pre-line font-display text-5xl leading-[0.98] text-cream sm:text-6xl lg:text-8xl">
-                {headline}
-              </h1>
-            </FadeIn>
-
-            <FadeIn delay={0.24} distance={18}>
-              <p className="mt-8 max-w-xl text-base leading-relaxed text-cream/80">
-                {subheadline}
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.36} distance={14}>
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Link
-                  href={ctaLink}
-                  className={cn(buttonVariants({ variant: "solid" }))}
-                >
-                  {ctaLabel}
-                </Link>
-              </div>
-            </FadeIn>
-          </div>
-        </Container>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
           <div className="relative h-10 w-px overflow-hidden bg-cream/20">
             <span className="absolute inset-x-0 top-0 h-4 animate-scroll-line bg-cream/70" />
           </div>
@@ -188,6 +180,8 @@ export default async function HomePage() {
                       src={collection.image_url}
                       alt={collection.name}
                       fill
+                      loading="eager"
+                      fetchPriority="low"
                       sizes="(min-width: 1280px) 80vw, 100vw"
                       className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
                     />
@@ -265,6 +259,8 @@ export default async function HomePage() {
               src={STORY_IMAGE}
               alt="Maison Noir atelier"
               fill
+              loading="eager"
+              fetchPriority="low"
               sizes="100vw"
               className="object-cover"
             />

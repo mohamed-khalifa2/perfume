@@ -1,5 +1,6 @@
 import { Container } from "@/components/ui/container";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductGridSkeleton } from "@/components/ui/skeletons";
 
 export default function Loading() {
   return (
@@ -72,15 +73,7 @@ export default function Loading() {
         <Container size="lg">
           <Skeleton variant="text" className="w-48" />
           <Skeleton variant="title" className="mt-4 h-9 w-72" />
-          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="flex flex-col gap-3">
-                <Skeleton variant="card" />
-                <Skeleton variant="text" className="w-3/4" />
-                <Skeleton variant="text" className="w-24" />
-              </div>
-            ))}
-          </div>
+          <ProductGridSkeleton count={4} className="mt-10 md:grid-cols-4" />
         </Container>
       </section>
     </div>

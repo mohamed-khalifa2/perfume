@@ -143,16 +143,7 @@ export default async function ProductPage({
       <Container size="lg">
         <div className="pt-8 md:pt-12">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-            <div className="mx-auto w-full min-w-0 max-w-xl lg:max-w-none">
-              <ProductGallery
-                images={product.images.map((url, index) => ({
-                  url,
-                  alt: `${product.name}, image ${index + 1}`,
-                }))}
-              />
-            </div>
-
-            <div className="mx-auto w-full min-w-0 max-w-xl lg:sticky lg:top-32 lg:max-w-none lg:self-start">
+            <div className="order-2 mx-auto w-full min-w-0 max-w-xl lg:sticky lg:top-32 lg:max-w-none lg:self-start">
               <AddToCartPanel
                 productId={product.id}
                 productSlug={product.slug}
@@ -161,6 +152,15 @@ export default async function ProductPage({
                 concentration={product.concentration}
                 image={product.images[0] ?? null}
                 variants={product.variants}
+              />
+            </div>
+
+            <div className="order-1 mx-auto w-full min-w-0 max-w-xl lg:max-w-none">
+              <ProductGallery
+                images={Array.from(new Set(product.images)).map((url, index) => ({
+                  url,
+                  alt: `${product.name}, image ${index + 1}`,
+                }))}
               />
             </div>
           </div>

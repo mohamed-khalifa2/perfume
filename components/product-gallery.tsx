@@ -87,7 +87,7 @@ export function ProductGallery({ images }: { images: GalleryImage[] }) {
         <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
           {images.map((image, index) => (
             <button
-              key={image.url}
+              key={`${image.url}-${index}`}
               type="button"
               onClick={() => setActive(index)}
               aria-label={`View image ${index + 1}`}

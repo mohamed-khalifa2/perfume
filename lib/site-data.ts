@@ -337,6 +337,7 @@ export type ShopProduct = {
   gender: string;
   concentration: string;
   scent_family: string | null;
+  collectionSlugs: string[];
   cover_image_url: string;
   galleryImage: string | null;
   price: number;
@@ -358,6 +359,9 @@ function seedShopProducts(): ShopProduct[] {
       gender: product.gender,
       concentration: product.concentration,
       scent_family: product.scentFamily,
+      collectionSlugs: Array.from(
+        new Set([product.gender, ...(product.isNew ? ["best-sellers"] : [])]),
+      ),
       cover_image_url: product.images[0],
       galleryImage: product.images[1] ?? null,
       price: priceVariant?.price ?? 0,
@@ -383,18 +387,24 @@ export const getShopProducts = cache(async (): Promise<ShopProduct[]> => {
     if (!data || data.length === 0) return seedShopProducts();
 
     const productIds = data.map((p) => p.id);
-    const [{ data: variants }, { data: images }] = await Promise.all([
-      supabase
-        .from("product_variants")
-        .select("id, product_id, size_ml, price, compare_at_price, stock")
-        .in("product_id", productIds)
-        .order("price", { ascending: true }),
-      supabase
-        .from("product_images")
-        .select("product_id, image_url, sort_order")
-        .in("product_id", productIds)
-        .order("sort_order", { ascending: true }),
-    ]);
+    const [{ data: variants }, { data: images }, { data: collectionLinks }, { data: collections }] =
+      await Promise.all([
+        supabase
+          .from("product_variants")
+          .select("id, product_id, size_ml, price, compare_at_price, stock")
+          .in("product_id", productIds)
+          .order("price", { ascending: true }),
+        supabase
+          .from("product_images")
+          .select("product_id, image_url, sort_order")
+          .in("product_id", productIds)
+          .order("sort_order", { ascending: true }),
+        supabase
+          .from("product_collections")
+          .select("product_id, collection_id")
+          .in("product_id", productIds),
+        supabase.from("collections").select("id, slug"),
+      ]);
 
     const variantsByProduct = new Map<string, ProductVariantOption[]>();
     for (const v of variants ?? []) {
@@ -414,14 +424,30 @@ export const getShopProducts = cache(async (): Promise<ShopProduct[]> => {
       if (!imageMap.has(img.product_id)) imageMap.set(img.product_id, img.image_url);
     }
 
+    const collectionSlugById = new Map(
+      (collections ?? []).map((collection) => [collection.id, collection.slug]),
+    );
+    const collectionSlugsByProduct = new Map<string, string[]>();
+    for (const link of collectionLinks ?? []) {
+      const slug = collectionSlugById.get(link.collection_id);
+      if (!slug) continue;
+      const list = collectionSlugsByProduct.get(link.product_id) ?? [];
+      if (!list.includes(slug)) list.push(slug);
+      collectionSlugsByProduct.set(link.product_id, list);
+    }
+
     return data.map((p) => {
       const productVariants = variantsByProduct.get(p.id) ?? getSeedProduct(p.slug)?.variants ?? [];
       const priceVariant =
         cheapestVariant(productVariants, true) ??
         cheapestVariant(productVariants, false);
+      const fallbackSlugs = Array.from(
+        new Set([p.gender, ...(p.is_new ? ["best-sellers"] : [])]),
+      );
       return {
         ...p,
         brand: p.brand ?? "Maison Noir",
+        collectionSlugs: collectionSlugsByProduct.get(p.id) ?? fallbackSlugs,
         cover_image_url: displayProductImage(p.slug, p.cover_image_url),
         galleryImage: displayOptionalProductImage(p.slug, imageMap.get(p.id), 1),
         price: priceVariant?.price ?? 0,

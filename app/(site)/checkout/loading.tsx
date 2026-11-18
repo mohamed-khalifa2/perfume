@@ -1,12 +1,12 @@
 import { Container } from "@/components/ui/container";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeadingSkeleton } from "@/components/ui/skeletons";
 
 export default function Loading() {
   return (
     <Container size="lg">
       <div className="py-16">
-        <Skeleton variant="text" className="w-24" />
-        <Skeleton variant="title" className="mt-4 h-10 w-64" />
+        <PageHeadingSkeleton />
 
         <div className="mt-12 grid gap-12 lg:grid-cols-3">
           <div className="space-y-10 lg:col-span-2">

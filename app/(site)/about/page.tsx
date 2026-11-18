@@ -7,13 +7,16 @@ import { FadeIn } from "@/components/ui/fade-in";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { cn } from "@/lib/cn";
 import { collectionImageUrl, STORY_IMAGE } from "@/lib/seed-images";
-import { getSiteSettings } from "@/lib/site-data";
 
 export const metadata = {
   title: "Our story",
   description:
     "Maison Noir is a study in restraint, small-batch perfumery composed in Cairo.",
 };
+
+const STORE_NAME = "Maison Noir";
+const TAGLINE = "Fragrance, composed.";
+const ADDRESS = "12 Talaat Harb Street, Downtown, Cairo, Egypt";
 
 const PRINCIPLES = [
   {
@@ -33,14 +36,25 @@ const PRINCIPLES = [
   },
 ];
 
-export default async function AboutPage() {
-  const settings = await getSiteSettings();
-  const storeName = settings.store_name || "Maison Noir";
-
+export default function AboutPage() {
   return (
     <div className="pb-24">
       <section className="relative overflow-hidden">
-        <div className="relative aspect-16/9 min-h-[60vh] lg:aspect-[21/9]">
+        <Container
+          size="lg"
+          className="absolute inset-0 z-10 flex items-end pb-16 lg:pb-24"
+        >
+          <div className="max-w-3xl">
+            <p className="text-[11px] uppercase tracking-label text-gold">
+              Our story
+            </p>
+            <h1 className="mt-5 font-display text-4xl leading-tight text-cream lg:text-6xl">
+              Fragrance, composed with restraint.
+            </h1>
+          </div>
+        </Container>
+
+        <div className="relative z-0 aspect-16/9 min-h-[60vh] lg:aspect-[21/9]">
           <Image
             src={STORY_IMAGE}
             alt="The Maison Noir atelier"
@@ -52,20 +66,6 @@ export default async function AboutPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
         </div>
-
-        <Container
-          size="lg"
-          className="absolute inset-0 flex items-end pb-16 lg:pb-24"
-        >
-          <FadeIn className="max-w-3xl">
-            <p className="text-[11px] uppercase tracking-label text-gold">
-              Our story
-            </p>
-            <h1 className="mt-5 font-display text-4xl leading-tight text-cream lg:text-6xl">
-              Fragrance, composed with restraint.
-            </h1>
-          </FadeIn>
-        </Container>
       </section>
 
       <Container size="lg">
@@ -73,7 +73,7 @@ export default async function AboutPage() {
           <FadeIn className="lg:col-span-7">
             <div className="space-y-6 text-base leading-relaxed text-muted">
               <p>
-                {storeName} began with a simple idea: a fragrance should feel
+                {STORE_NAME} began with a simple idea: a fragrance should feel
                 considered, not crowded. We started in a small Cairo atelier,
                 blending in quantities that let us pay attention to every
                 material and every decision.
@@ -98,6 +98,8 @@ export default async function AboutPage() {
                 src={collectionImageUrl("best-sellers")}
                 alt="A Maison Noir composition"
                 fill
+                loading="eager"
+                fetchPriority="low"
                 sizes="(min-width: 1024px) 35vw, 100vw"
                 className="object-cover"
               />
@@ -139,11 +141,9 @@ export default async function AboutPage() {
                 From the house
               </p>
               <p className="mt-3 font-display text-2xl text-ink">
-                {settings.tagline || "Fragrance, composed."}
+                {TAGLINE}
               </p>
-              {settings.address ? (
-                <p className="mt-2 text-sm text-muted">{settings.address}</p>
-              ) : null}
+              <p className="mt-2 text-sm text-muted">{ADDRESS}</p>
             </div>
 
             <div className="flex flex-wrap gap-3">

@@ -6,7 +6,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const LABELS: Record<string, string> = {
-  gender: "Gender",
   concentration: "Concentration",
   scent_family: "Scent family",
   collection: "Collection",
@@ -16,13 +15,34 @@ const LABELS: Record<string, string> = {
   in_stock: "In stock",
 };
 
-export function ActiveFilterChips() {
+const FILTER_KEYS = new Set(Object.keys(LABELS));
+
+const CONCENTRATION_LABELS: Record<string, string> = {
+  EDP: "Eau de Parfum",
+  EDT: "Eau de Toilette",
+  Parfum: "Parfum",
+  Extrait: "Extrait",
+};
+
+const SORT_LABELS: Record<string, string> = {
+  featured: "Featured",
+  newest: "Newest",
+  "price-asc": "Price: low to high",
+  "price-desc": "Price: high to low",
+};
+
+type ActiveFilterChipsProps = {
+  collections?: { slug: string; name: string }[];
+};
+
+export function ActiveFilterChips({ collections = [] }: ActiveFilterChipsProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const collectionNames = new Map(collections.map((collection) => [collection.slug, collection.name]));
   const chips: { key: string; label: string; href: string }[] = [];
 
   for (const [key, value] of searchParams.entries()) {
-    if (key === "page") continue;
+    if (!FILTER_KEYS.has(key)) continue;
 
     const next = new URLSearchParams(searchParams.toString());
     const values = searchParams.getAll(key).filter((v) => v !== value);
@@ -33,12 +53,13 @@ export function ActiveFilterChips() {
 
     let label = value;
     if (key === "size") label = `${value} ml`;
-    if (key === "gender") label = value === "men" ? "Men" : value === "women" ? "Women" : "Unisex";
-    if (key === "collection") label = value;
+    if (key === "concentration") label = CONCENTRATION_LABELS[value] ?? value;
+    if (key === "collection") label = collectionNames.get(value) ?? value;
+    if (key === "sort") label = SORT_LABELS[value] ?? value;
 
     chips.push({
       key: `${key}-${value}`,
-      label: `${LABELS[key] ?? key}: ${label}`,
+      label: key === "in_stock" ? "In stock" : `${LABELS[key]}: ${label}`,
       href: qs ? `${pathname}?${qs}` : pathname,
     });
   }
