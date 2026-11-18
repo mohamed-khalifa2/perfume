@@ -22,7 +22,8 @@ export type ProductCardProps = {
   compareAtPrice?: number | null;
   isNew?: boolean;
   className?: string;
-  priority?: boolean;
+  eager?: boolean;
+  sizes?: string;
   variants?: ProductVariantOption[];
 };
 
@@ -37,10 +38,10 @@ export function ProductCard({
   compareAtPrice,
   isNew = false,
   className,
-  priority = false,
+  eager = false,
+  sizes = "(min-width: 1280px) 22vw, (min-width: 768px) 33vw, 50vw",
   variants = [],
 }: ProductCardProps) {
-  const sizes = "(min-width: 1280px) 22vw, (min-width: 768px) 33vw, 50vw";
 
   // Cards always advertise and add the cheapest variant that is in stock.
   const addVariant = cheapestVariant(variants, true);
@@ -61,7 +62,7 @@ export function ProductCard({
             src={coverImage}
             alt={name}
             fill
-            priority={priority}
+            loading={eager ? "eager" : undefined}
             sizes={sizes}
             className={cn(
               "object-cover transition-opacity duration-700 ease-out",

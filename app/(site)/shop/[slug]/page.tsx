@@ -143,14 +143,16 @@ export default async function ProductPage({
       <Container size="lg">
         <div className="pt-8 md:pt-12">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-            <ProductGallery
-              images={product.images.map((url, index) => ({
-                url,
-                alt: `${product.name}, image ${index + 1}`,
-              }))}
-            />
+            <div className="mx-auto w-full min-w-0 max-w-xl lg:max-w-none">
+              <ProductGallery
+                images={product.images.map((url, index) => ({
+                  url,
+                  alt: `${product.name}, image ${index + 1}`,
+                }))}
+              />
+            </div>
 
-            <div className="lg:sticky lg:top-32 lg:self-start">
+            <div className="mx-auto w-full min-w-0 max-w-xl lg:sticky lg:top-32 lg:max-w-none lg:self-start">
               <AddToCartPanel
                 productId={product.id}
                 productSlug={product.slug}
@@ -251,22 +253,24 @@ export default async function ProductPage({
               </Link>
             </div>
 
-            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+            <div className="mt-10 grid grid-cols-1 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-4 scrollbar-hidden">
               {related.map((item, index) => (
-                <ProductCard
-                  key={item.id}
-                  id={item.id}
-                  name={item.name}
-                  slug={item.slug}
-                  brand={item.brand}
-                  coverImage={item.coverImage}
-                  galleryImage={item.galleryImage}
-                  price={item.price}
-                  compareAtPrice={item.compareAtPrice}
-                  isNew={item.isNew}
-                  variants={item.variants}
-                  priority={index < 2}
-                />
+                <div key={item.id} className="w-full max-w-xs sm:max-w-none">
+                  <ProductCard
+                    id={item.id}
+                    name={item.name}
+                    slug={item.slug}
+                    brand={item.brand}
+                    coverImage={item.coverImage}
+                    galleryImage={item.galleryImage}
+                    price={item.price}
+                    compareAtPrice={item.compareAtPrice}
+                    isNew={item.isNew}
+                    variants={item.variants}
+                    eager={index < 2}
+                    sizes="(min-width: 1280px) 22vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  />
+                </div>
               ))}
             </div>
           </Container>

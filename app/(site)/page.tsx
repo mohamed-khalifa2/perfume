@@ -111,7 +111,8 @@ export default async function HomePage() {
           src={heroImage}
           alt={headline.replace("\n", " ")}
           fill
-          priority
+          loading="eager"
+          fetchPriority="high"
           sizes="100vw"
           className="object-cover"
         />
@@ -220,9 +221,13 @@ export default async function HomePage() {
               description="Eight compositions selected for their character and staying power."
             />
 
-            <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+            <div className="mt-12 grid grid-cols-1 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-4">
               {displayFeatured.map((product, index) => (
-                <FadeIn key={product.id} delay={index * 0.06}>
+                <FadeIn
+                  key={product.id}
+                  delay={index * 0.06}
+                  className="w-full max-w-xs sm:max-w-none"
+                >
                   <ProductCard
                     id={product.id}
                     name={product.name}
@@ -234,7 +239,8 @@ export default async function HomePage() {
                     compareAtPrice={product.compareAtPrice}
                     isNew={product.is_new}
                     variants={product.variants}
-                    priority={index < 2}
+                    eager={index < 2}
+                    sizes="(min-width: 1280px) 22vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
                 </FadeIn>
               ))}
@@ -309,26 +315,29 @@ export default async function HomePage() {
           <Carousel
             ariaLabel="New arrivals"
             className="mt-10"
-            controlsClassName="px-6 lg:px-10"
-            trackClassName="mt-6 gap-6 px-6 pb-2 lg:px-10"
+            controlsClassName="justify-center px-6 sm:justify-start lg:px-10"
+            trackClassName="mt-6 gap-6 px-6 pb-2 scroll-px-6 lg:px-10 lg:scroll-px-10"
           >
             {displayNewArrivals.map((product) => (
               <div
                 key={product.id}
-                className="w-[75vw] shrink-0 snap-start sm:w-[42vw] lg:w-[24vw]"
+                className="flex w-full shrink-0 snap-center justify-center sm:block sm:w-[42vw] lg:w-[24vw]"
               >
-                <ProductCard
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  brand={product.brand}
-                  coverImage={product.cover_image_url ?? PLACEHOLDER_IMAGE}
-                  galleryImage={product.galleryImage}
-                  price={product.price}
-                  compareAtPrice={product.compareAtPrice}
-                  isNew={product.is_new}
-                  variants={product.variants}
-                />
+                <div className="w-[82vw] max-w-sm sm:w-full">
+                  <ProductCard
+                    id={product.id}
+                    name={product.name}
+                    slug={product.slug}
+                    brand={product.brand}
+                    coverImage={product.cover_image_url ?? PLACEHOLDER_IMAGE}
+                    galleryImage={product.galleryImage}
+                    price={product.price}
+                    compareAtPrice={product.compareAtPrice}
+                    isNew={product.is_new}
+                    variants={product.variants}
+                    sizes="(min-width: 1024px) 24vw, (min-width: 640px) 42vw, 85vw"
+                  />
+                </div>
               </div>
             ))}
           </Carousel>

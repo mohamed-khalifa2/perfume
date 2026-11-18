@@ -110,7 +110,8 @@ export default async function CollectionPage({
               fill
               sizes="100vw"
               className="object-cover"
-              priority
+              loading="eager"
+              fetchPriority="high"
             />
           ) : (
             <div className="h-full w-full bg-cream-deep" />
@@ -153,7 +154,7 @@ export default async function CollectionPage({
               compareAtPrice={product.compareAtPrice}
               isNew={product.is_new}
               variants={product.variants}
-              priority={index < 2}
+              eager={index < 2}
             />
           ))}
         </div>

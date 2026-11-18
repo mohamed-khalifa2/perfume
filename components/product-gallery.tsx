@@ -77,7 +77,8 @@ export function ProductGallery({ images }: { images: GalleryImage[] }) {
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
-                priority={active === 0}
+                loading={active === 0 ? "eager" : undefined}
+                fetchPriority={active === 0 ? "high" : undefined}
               />
             </motion.div>
           </AnimatePresence>

@@ -142,7 +142,7 @@ export default async function ShopPage({
                     compareAtPrice={product.compareAtPrice}
                     isNew={product.is_new}
                     variants={product.variants}
-                    priority={index < 4}
+                    eager={index < 4}
                   />
                 ))}
               </div>

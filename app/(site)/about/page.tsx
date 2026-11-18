@@ -45,7 +45,8 @@ export default async function AboutPage() {
             src={STORY_IMAGE}
             alt="The Maison Noir atelier"
             fill
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover"
           />

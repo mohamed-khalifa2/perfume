@@ -65,8 +65,12 @@ export function Carousel({
     const track = trackRef.current;
     if (!track) return;
 
+    const firstSlide = track.firstElementChild as HTMLElement | null;
+    const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
+    const step = firstSlide ? firstSlide.offsetWidth + gap : track.clientWidth;
+
     track.scrollBy({
-      left: direction * track.clientWidth * 0.8,
+      left: direction * step,
       behavior: "smooth",
     });
   }, []);
