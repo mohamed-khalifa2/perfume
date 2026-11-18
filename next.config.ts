@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   partialPrefetching: false,
   experimental: {
+    agentUpgrade: "security",
     // Server Actions default to a 1 MB request body. Images are optimized in
     // the browser before submission; this headroom covers unoptimized files
     // (older browsers) and multipart overhead.
