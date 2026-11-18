@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 
 import { ActiveFilterChips } from "@/components/active-filter-chips";
-import { ProductCard } from "@/components/product-card";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ShopFilters } from "@/components/shop-filters";
-import { ShopPagination } from "@/components/shop-pagination";
+import { ShopResults } from "@/components/shop-results";
 import { createClient } from "@/lib/supabase/server";
 import { getShopProducts } from "@/lib/site-data";
 
@@ -25,7 +24,7 @@ export default async function ShopPage({
   const sort = typeof params.sort === "string" ? params.sort : "featured";
   const q = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
   const inStock = params.in_stock === "1";
-  const page = Math.max(1, Number(params.page) || 1);
+  const requestedPage = Math.max(1, Number(params.page) || 1);
 
   const allProducts = await getShopProducts();
   let products = allProducts.slice();
@@ -49,8 +48,20 @@ export default async function ShopPage({
 
   const total = products.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(requestedPage, totalPages);
   const start = (page - 1) * PAGE_SIZE;
-  const paged = products.slice(start, start + PAGE_SIZE);
+  const paged = products.slice(start, start + PAGE_SIZE).map((product) => ({
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    brand: product.brand,
+    coverImage: product.cover_image_url,
+    galleryImage: product.galleryImage,
+    price: product.price,
+    compareAtPrice: product.compareAtPrice,
+    isNew: product.is_new,
+    variants: product.variants,
+  }));
 
   const scentFamilies = Array.from(
     new Set(
@@ -120,36 +131,8 @@ export default async function ShopPage({
               </Suspense>
             </div>
 
-            {paged.length === 0 ? (
-              <div className="flex flex-col items-center gap-4 border border-line py-16 text-center">
-                <p className="font-display text-xl text-ink">No fragrances found</p>
-                <p className="text-sm text-muted">
-                  Try adjusting your filters or clearing them.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3">
-                {paged.map((product, index) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    slug={product.slug}
-                    brand={product.brand}
-                    coverImage={product.cover_image_url}
-                    galleryImage={product.galleryImage}
-                    price={product.price}
-                    compareAtPrice={product.compareAtPrice}
-                    isNew={product.is_new}
-                    variants={product.variants}
-                    eager={index < 4}
-                  />
-                ))}
-              </div>
-            )}
-
             <Suspense fallback={null}>
-              <ShopPagination page={page} totalPages={totalPages} />
+              <ShopResults products={paged} page={page} totalPages={totalPages} />
             </Suspense>
           </div>
         </div>

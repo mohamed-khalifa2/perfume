@@ -260,7 +260,7 @@ export default async function HomePage() {
       {/* Brand story banner */}
       <section className="py-10 lg:py-16">
         <div className="relative overflow-hidden">
-          <div className="relative aspect-16/9 min-h-[70vh] lg:aspect-[21/9]">
+          <div className="absolute inset-0">
             <Image
               src={STORY_IMAGE}
               alt="Maison Noir atelier"
@@ -271,7 +271,10 @@ export default async function HomePage() {
             <div className="absolute inset-0 bg-ink/60" />
           </div>
 
-          <Container size="lg" className="absolute inset-0 flex items-center">
+          <Container
+            size="lg"
+            className="relative flex min-h-[70vh] flex-col justify-center py-14 lg:py-24"
+          >
             <FadeIn className="max-w-xl">
               <p className="text-[11px] uppercase tracking-label text-gold">
                 Our story

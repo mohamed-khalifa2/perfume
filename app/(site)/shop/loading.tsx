@@ -1,35 +1,38 @@
-export default function Loading() {
+import { Container } from "@/components/ui/container";
+import { ShopPaginationSkeleton, ShopProductSkeleton } from "@/components/shop-results-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function ShopLoading() {
   return (
     <div className="pb-24">
-      <div className="mx-auto max-w-7xl px-6 pt-10 lg:px-10">
-        <div className="h-4 w-24 animate-pulse bg-cream-deep" />
-        <div className="mt-4 h-10 w-80 animate-pulse bg-cream-deep" />
-        <div className="mt-3 h-4 w-full max-w-xl animate-pulse bg-cream-deep" />
-      </div>
-
-      <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-10 px-6 lg:flex-row lg:gap-16 lg:px-10">
-        <div className="hidden w-64 flex-col gap-8 lg:flex">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="flex flex-col gap-3">
-              <div className="h-3 w-24 animate-pulse bg-cream-deep" />
-              <div className="h-3 w-full animate-pulse bg-cream-deep" />
-              <div className="h-3 w-3/4 animate-pulse bg-cream-deep" />
-              <div className="h-3 w-2/3 animate-pulse bg-cream-deep" />
-            </div>
-          ))}
+      <Container size="lg">
+        <div className="space-y-4 pt-10 md:pt-14">
+          <Skeleton variant="text" className="w-16" />
+          <Skeleton variant="title" className="h-10 w-64" />
+          <Skeleton variant="text" className="w-2/3" />
         </div>
 
-        <div className="grid flex-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <div key={index} className="flex flex-col gap-3">
-              <div className="aspect-3/4 w-full animate-pulse bg-cream-deep" />
-              <div className="h-3 w-16 animate-pulse bg-cream-deep" />
-              <div className="h-5 w-3/4 animate-pulse bg-cream-deep" />
-              <div className="h-3 w-24 animate-pulse bg-cream-deep" />
+        <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
+          <aside className="w-full lg:w-64 lg:shrink-0">
+            <div className="space-y-4">
+              <Skeleton variant="text" className="w-24" />
+              <Skeleton className="h-11 w-full" />
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="space-y-3 border-t border-line pt-4">
+                  <Skeleton variant="text" className="w-20" />
+                  <Skeleton variant="text" className="w-32" />
+                </div>
+              ))}
             </div>
-          ))}
+          </aside>
+
+          <div className="flex flex-1 flex-col gap-8">
+            <Skeleton variant="text" className="w-24" />
+            <ShopProductSkeleton />
+            <ShopPaginationSkeleton />
+          </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

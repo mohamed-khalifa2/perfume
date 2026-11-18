@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, Loader2, SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -62,6 +62,20 @@ function toggleParam(
   return next;
 }
 
+function FilterStateIcon({
+  pending,
+  active,
+}: {
+  pending: boolean;
+  active: boolean;
+}) {
+  if (pending) {
+    return <Loader2 className="size-3 animate-spin text-gold-muted" aria-hidden />;
+  }
+  if (active) return <X className="size-3" aria-hidden />;
+  return null;
+}
+
 function FilterSection({
   title,
   children,
@@ -95,6 +109,7 @@ export function ShopFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const initialQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = useState(initialQuery);
@@ -105,16 +120,19 @@ export function ShopFilters({
     setQuery(initialQuery);
   }
 
-  const apply = (params: URLSearchParams) => {
+  const apply = (params: URLSearchParams, key?: string) => {
     const qs = params.toString();
+    setPendingKey(key ?? null);
     startTransition(() => {
       router.push(qs ? `${pathname}?${qs}` : pathname);
     });
   };
 
+  const isKeyPending = (key: string) => isPending && pendingKey === key;
+
   const toggle = (key: string, value: string) => {
     const params = toggleParam(new URLSearchParams(searchParams.toString()), key, value);
-    apply(params);
+    apply(params, `${key}:${value}`);
   };
 
   const setSingle = (key: string, value: string | null) => {
@@ -125,7 +143,7 @@ export function ShopFilters({
       params.delete(key);
     }
     params.delete("page");
-    apply(params);
+    apply(params, `${key}:${value ?? "clear"}`);
   };
 
   const applySearch = (value: string) => {
@@ -137,10 +155,11 @@ export function ShopFilters({
       params.delete("q");
     }
     params.delete("page");
-    apply(params);
+    apply(params, "search");
   };
 
   const clearAll = () => {
+    setPendingKey("clear");
     startTransition(() => {
       router.push(pathname);
     });
@@ -154,8 +173,11 @@ export function ShopFilters({
           <button
             type="button"
             onClick={clearAll}
-            className="text-[11px] uppercase tracking-label text-muted transition-colors hover:text-ink"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-label text-muted transition-colors hover:text-ink"
           >
+            {isKeyPending("clear") ? (
+              <Loader2 className="size-3 animate-spin" aria-hidden />
+            ) : null}
             Clear all
           </button>
         ) : null}
@@ -170,13 +192,21 @@ export function ShopFilters({
             applySearch(query);
           }}
         >
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Name or brand"
-            aria-label="Search products"
-            className="w-full h-11 border border-line px-4 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Name or brand"
+              aria-label="Search products"
+              className="h-11 w-full border border-line pr-10 pl-4 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+            />
+            {isKeyPending("search") ? (
+              <Loader2
+                className="absolute top-1/2 right-3 size-3.5 -translate-y-1/2 animate-spin text-gold-muted"
+                aria-hidden
+              />
+            ) : null}
+          </div>
         </form>
       </div>
 
@@ -194,7 +224,10 @@ export function ShopFilters({
               )}
             >
               {gender.label}
-              {active ? <X className="size-3" aria-hidden /> : null}
+              <FilterStateIcon
+                pending={isKeyPending(`gender:${gender.value}`)}
+                active={active}
+              />
             </button>
           );
         })}
@@ -214,7 +247,10 @@ export function ShopFilters({
               )}
             >
               {item.label}
-              {active ? <X className="size-3" aria-hidden /> : null}
+              <FilterStateIcon
+                pending={isKeyPending(`concentration:${item.value}`)}
+                active={active}
+              />
             </button>
           );
         })}
@@ -235,7 +271,10 @@ export function ShopFilters({
                 )}
               >
                 {collection.name}
-                {active ? <X className="size-3" aria-hidden /> : null}
+                <FilterStateIcon
+                  pending={isKeyPending(`collection:${collection.slug}`)}
+                  active={active}
+                />
               </button>
             );
           })}
@@ -257,7 +296,10 @@ export function ShopFilters({
                 )}
               >
                 {family}
-                {active ? <X className="size-3" aria-hidden /> : null}
+                <FilterStateIcon
+                  pending={isKeyPending(`scent_family:${family}`)}
+                  active={active}
+                />
               </button>
             );
           })}
@@ -278,7 +320,10 @@ export function ShopFilters({
               )}
             >
               {size} ml
-              {active ? <X className="size-3" aria-hidden /> : null}
+              <FilterStateIcon
+                pending={isKeyPending(`size:${size}`)}
+                active={active}
+              />
             </button>
           );
         })}
@@ -298,7 +343,10 @@ export function ShopFilters({
               )}
             >
               {option.label}
-              {active && option.value !== "featured" ? <X className="size-3" aria-hidden /> : null}
+              <FilterStateIcon
+                pending={isKeyPending(`sort:${option.value}`)}
+                active={active && option.value !== "featured"}
+              />
             </button>
           );
         })}
@@ -351,8 +399,11 @@ export function ShopFilters({
                     clearAll();
                     setOpen(false);
                   }}
-                  className={cn(buttonVariants({ variant: "ghost" }), "w-full")}
+                  className={cn(buttonVariants({ variant: "ghost" }), "w-full gap-2")}
                 >
+                  {isKeyPending("clear") ? (
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  ) : null}
                   Clear all
                 </button>
               </div>
@@ -362,7 +413,8 @@ export function ShopFilters({
       </div>
 
       {isPending ? (
-        <div className="fixed right-6 bottom-6 border border-line bg-cream px-4 py-2 text-[11px] uppercase tracking-label text-muted">
+        <div className="fixed right-6 bottom-6 flex items-center gap-2 border border-line bg-cream px-4 py-2 text-[11px] uppercase tracking-label text-muted">
+          <Loader2 className="size-3 animate-spin" aria-hidden />
           Updating
         </div>
       ) : null}
