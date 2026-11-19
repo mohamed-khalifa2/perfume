@@ -1,7 +1,7 @@
-import { AppToaster } from "@/components/app-toaster";
-import { CartDrawer } from "@/components/cart-drawer";
 import { CartHydrator } from "@/components/cart-hydrator";
-import { SearchOverlay } from "@/components/search-overlay";
+import { DeferredOverlays } from "@/components/deferred-overlays";
+import { FadeInObserver } from "@/components/fade-in-observer";
+import { ProductCardInteractions } from "@/components/product-card-interactions";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getSiteSettings } from "@/lib/site-data";
@@ -12,14 +12,16 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-screen flex-col">
       <CartHydrator />
+      <FadeInObserver />
+      <ProductCardInteractions />
       <SiteHeader />
       <main className="flex-1 pt-[var(--spacing-header)] md:pt-[calc(var(--spacing-header)+1rem)]">
         {children}
       </main>
       <SiteFooter />
-      <CartDrawer freeShippingThreshold={settings.free_shipping_threshold ?? 0} />
-      <SearchOverlay />
-      <AppToaster />
+      <DeferredOverlays
+        freeShippingThreshold={settings.free_shipping_threshold ?? 0}
+      />
     </div>
   );
 }

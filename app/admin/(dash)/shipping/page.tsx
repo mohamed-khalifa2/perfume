@@ -50,7 +50,7 @@ export default async function AdminShippingPage() {
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Settings</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Settings</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Shipping Zones</h1>
 
       <div className="mt-10">

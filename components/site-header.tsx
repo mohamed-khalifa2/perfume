@@ -1,4 +1,5 @@
 import { HeaderShell } from "@/components/header-shell";
+import { MobileMenu } from "@/components/mobile-menu";
 import { getSiteSettings, getVisibleCollections } from "@/lib/site-data";
 
 export async function SiteHeader() {
@@ -7,5 +8,9 @@ export async function SiteHeader() {
     getVisibleCollections(),
   ]);
 
-  return <HeaderShell settings={settings} collections={collections} />;
+  return (
+    <HeaderShell settings={settings} collections={collections}>
+      <MobileMenu settings={settings} collections={collections} />
+    </HeaderShell>
+  );
 }

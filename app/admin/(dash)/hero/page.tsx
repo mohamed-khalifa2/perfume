@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { revalidatePublicCatalog } from "@/lib/catalog-cache";
 import {
   getFormFile,
   uploadErrorMessage,
@@ -61,12 +62,13 @@ export default async function AdminHeroPage({
       cta_link: cta_link || null,
     });
 
+    revalidatePublicCatalog();
     redirect("/admin/hero?saved=1");
   }
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Content</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Content</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Hero</h1>
 
       <AdminNotice error={error} saved={saved === "1"} />

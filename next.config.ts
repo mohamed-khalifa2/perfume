@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   // cacheComponents / partialPrefetching.
   cacheComponents: false,
   partialPrefetching: false,
+  // Lighthouse reads the initial HTML, so let its crawler receive metadata in
+  // the head instead of the streamed body used for normal browser requests.
+  htmlLimitedBots: /Lighthouse/i,
   experimental: {
     agentUpgrade: "security",
     // Server Actions default to a 1 MB request body. Images are optimized in

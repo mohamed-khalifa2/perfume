@@ -26,7 +26,7 @@ export default async function AdminInquiriesPage() {
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Content</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Content</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Inquiries</h1>
 
       <div className="mt-10 space-y-6">
@@ -66,7 +66,7 @@ export default async function AdminInquiriesPage() {
               {inquiry.message}
             </p>
             {!inquiry.is_read ? (
-              <p className="mt-4 text-xs uppercase tracking-label text-gold">
+              <p className="mt-4 text-xs uppercase tracking-label text-gold-on-light">
                 Unread
               </p>
             ) : null}

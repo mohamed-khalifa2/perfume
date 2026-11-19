@@ -43,7 +43,7 @@ export function SectionHeading({
       )}
     >
       {label ? (
-        <p className="text-[11px] uppercase tracking-label text-gold">{label}</p>
+        <p className="text-[11px] uppercase tracking-label text-gold-on-light">{label}</p>
       ) : null}
 
       <Heading className={cn("mt-4", headingVariants({ level }))}>{title}</Heading>

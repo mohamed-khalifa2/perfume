@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { revalidatePublicCatalog } from "@/lib/catalog-cache";
 import { uniqueSlug } from "@/lib/admin/slug";
 import {
   getFormFile,
@@ -80,6 +81,7 @@ export default async function EditCollectionPage({
       );
     }
 
+    revalidatePublicCatalog();
     redirect(`/admin/collections/${id}?saved=1`);
   }
 
@@ -87,12 +89,13 @@ export default async function EditCollectionPage({
     "use server";
     const { supabase: s } = await requireAdmin();
     await s.from("collections").delete().eq("id", id);
+    revalidatePublicCatalog();
     redirect("/admin/collections");
   }
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Edit collection</h1>
 
       <AdminNotice error={error} saved={saved === "1"} />

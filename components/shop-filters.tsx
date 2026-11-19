@@ -64,7 +64,7 @@ function FilterStateIcon({
   active: boolean;
 }) {
   if (pending) {
-    return <Loader2 className="size-3 animate-spin text-gold-muted" aria-hidden />;
+    return <Loader2 className="size-3 animate-spin text-gold-on-light" aria-hidden />;
   }
   if (active) return <X className="size-3" aria-hidden />;
   return null;
@@ -198,7 +198,7 @@ export function ShopFilters({
             />
             {isKeyPending("search") ? (
               <Loader2
-                className="absolute top-1/2 right-3 size-3.5 -translate-y-1/2 animate-spin text-gold-muted"
+                className="absolute top-1/2 right-3 size-3.5 -translate-y-1/2 animate-spin text-gold-on-light"
                 aria-hidden
               />
             ) : null}

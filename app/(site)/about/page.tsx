@@ -120,7 +120,7 @@ export default function AboutPage() {
                 key={principle.number}
                 className="border-t border-ink pt-6"
               >
-                <p className="text-xs uppercase tracking-label text-gold">
+                <p className="text-xs uppercase tracking-label text-gold-on-light">
                   {principle.number}
                 </p>
                 <h2 className="mt-4 font-display text-2xl text-ink">
@@ -137,7 +137,7 @@ export default function AboutPage() {
         <FadeIn>
           <section className="mt-24 flex flex-col gap-8 border border-line px-8 py-12 md:flex-row md:items-center md:justify-between lg:px-12">
             <div>
-              <p className="text-xs uppercase tracking-label text-gold">
+              <p className="text-xs uppercase tracking-label text-gold-on-light">
                 From the house
               </p>
               <p className="mt-3 font-display text-2xl text-ink">

@@ -7,8 +7,12 @@
  * The same images are written by `supabase/migration.sql` on a fresh seed.
  */
 
+import { localImage } from "@/lib/local-images";
+
 const photo = (id: number, width: number, height: number): string =>
-  `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${width}&h=${height}&fit=crop`;
+  localImage(
+    `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${width}&h=${height}&fit=crop`,
+  );
 
 export const HERO_IMAGE = photo(11517300, 1920, 1080);
 export const STORY_IMAGE = photo(8450466, 1920, 1080);
@@ -199,7 +203,7 @@ export function displayProductImage(
   url: string | null | undefined,
   index = 0,
 ): string {
-  return isRandomPlaceholder(url) ? productImageUrl(slug, index) : url!;
+  return localImage(isRandomPlaceholder(url) ? productImageUrl(slug, index) : url!);
 }
 
 /** Gallery images stay absent when an admin removes them, with no invented art. */
@@ -209,16 +213,16 @@ export function displayOptionalProductImage(
   index = 0,
 ): string | null {
   if (url == null) return null;
-  return isRandomPlaceholder(url) ? productImageUrl(slug, index) : url;
+  return localImage(isRandomPlaceholder(url) ? productImageUrl(slug, index) : url);
 }
 
 export function displayCollectionImage(
   slug: string,
   url: string | null | undefined,
 ): string {
-  return isRandomPlaceholder(url) ? collectionImageUrl(slug) : url!;
+  return localImage(isRandomPlaceholder(url) ? collectionImageUrl(slug) : url!);
 }
 
 export function displayHeroImage(url: string | null | undefined): string {
-  return isRandomPlaceholder(url) ? HERO_IMAGE : url!;
+  return localImage(isRandomPlaceholder(url) ? HERO_IMAGE : url!);
 }

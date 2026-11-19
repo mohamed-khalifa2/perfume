@@ -39,7 +39,7 @@ export default async function AdminOrdersPage() {
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Sales</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Sales</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Orders</h1>
 
       <div className="mt-10 overflow-x-auto border-t border-line">

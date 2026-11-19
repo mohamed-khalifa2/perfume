@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { revalidatePublicCatalog } from "@/lib/catalog-cache";
 import {
   getFormFile,
   uploadErrorMessage,
@@ -85,12 +86,13 @@ export default async function AdminSettingsPage({
       );
     }
 
+    revalidatePublicCatalog();
     redirect("/admin/settings?saved=1");
   }
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Settings</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Settings</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Site Settings</h1>
 
       <AdminNotice error={error} saved={saved === "1"} />
@@ -174,7 +176,7 @@ export default async function AdminSettingsPage({
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-label text-gold">Social</p>
+          <p className="text-xs uppercase tracking-label text-gold-on-light">Social</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <Input
               name="instagram"
@@ -221,7 +223,7 @@ export default async function AdminSettingsPage({
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-label text-gold">SEO</p>
+          <p className="text-xs uppercase tracking-label text-gold-on-light">SEO</p>
           <div className="mt-4 space-y-4">
             <div>
               <label className="text-xs uppercase tracking-label text-muted">

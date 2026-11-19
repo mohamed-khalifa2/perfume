@@ -168,7 +168,7 @@ export default async function ProductPage({
           <div className="mt-16 grid gap-16 lg:grid-cols-2">
             <FadeIn>
               <div>
-                <p className="text-[11px] uppercase tracking-label text-gold">
+                <p className="text-[11px] uppercase tracking-label text-gold-on-light">
                   Description
                 </p>
                 <p className="mt-6 text-base leading-relaxed text-ink">
@@ -179,7 +179,7 @@ export default async function ProductPage({
 
             <FadeIn delay={0.1}>
               <div>
-                <p className="text-[11px] uppercase tracking-label text-gold">
+                <p className="text-[11px] uppercase tracking-label text-gold-on-light">
                   Notes pyramid
                 </p>
                 <div className="mt-8 flex flex-col items-center gap-4">
@@ -208,7 +208,7 @@ export default async function ProductPage({
 
           <FadeIn>
             <div className="mt-16">
-              <p className="text-[11px] uppercase tracking-label text-gold">Details</p>
+              <p className="text-[11px] uppercase tracking-label text-gold-on-light">Details</p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {[
                   { label: "Concentration", value: product.concentration },
@@ -238,12 +238,12 @@ export default async function ProductPage({
           <Container size="lg">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-[11px] uppercase tracking-label text-gold">
+                <p className="text-[11px] uppercase tracking-label text-gold-on-light">
                   You may also like
                 </p>
-                <p className="mt-4 font-display text-3xl text-ink">
+                <h2 className="mt-4 font-display text-3xl text-ink">
                   From the same house
-                </p>
+                </h2>
               </div>
               <Link
                 href="/shop"

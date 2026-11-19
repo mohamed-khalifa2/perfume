@@ -53,7 +53,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       />
 
       {error ? (
-        <p id={messageId} className="text-xs text-gold-muted">
+        <p id={messageId} className="text-xs text-gold-on-light">
           {error}
         </p>
       ) : null}

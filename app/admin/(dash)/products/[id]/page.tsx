@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { revalidatePublicCatalog } from "@/lib/catalog-cache";
 import { uniqueSlug } from "@/lib/admin/slug";
 import {
   getFormFile,
@@ -183,6 +184,7 @@ export default async function AdminProductEditPage({
       );
     }
 
+    revalidatePublicCatalog();
     redirect(`/admin/products/${id}?saved=1`);
   }
 
@@ -190,12 +192,13 @@ export default async function AdminProductEditPage({
     "use server";
     const { supabase: s } = await requireAdmin();
     await s.from("products").delete().eq("id", id);
+    revalidatePublicCatalog();
     redirect("/admin/products");
   }
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Edit product</h1>
 
       <AdminNotice error={error} saved={saved === "1"} />

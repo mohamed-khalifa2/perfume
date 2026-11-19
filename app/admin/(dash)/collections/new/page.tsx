@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { revalidatePublicCatalog } from "@/lib/catalog-cache";
 import { uniqueSlug } from "@/lib/admin/slug";
 import {
   getFormFile,
@@ -64,12 +65,13 @@ export default async function NewCollectionPage({
       );
     }
 
+    revalidatePublicCatalog();
     redirect("/admin/collections");
   }
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Catalog</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Catalog</p>
       <h1 className="mt-4 font-display text-4xl text-ink">New collection</h1>
 
       <AdminNotice error={error} />

@@ -2,13 +2,16 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/cn";
 
-const numberFormatter = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
+export function formatNumber(amount: number) {
+  const rounded = Math.round(amount * 100) / 100;
+  const [whole, fraction] = rounded.toString().split(".");
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  return fraction ? `${grouped}.${fraction}` : grouped;
+}
 
 export function formatEgp(amount: number) {
-  return `EGP ${numberFormatter.format(amount)}`;
+  return `EGP ${formatNumber(amount)}`;
 }
 
 const priceVariants = cva("inline-flex items-baseline gap-2", {

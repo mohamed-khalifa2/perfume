@@ -1,21 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ChevronDown,
-  Facebook,
-  Instagram,
-  Mail,
-  Menu,
-  Phone,
-  Search,
-  ShoppingBag,
-  X,
-} from "lucide-react";
+import { ChevronDown, Menu, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Container } from "@/components/ui/container";
 import { formatEgp } from "@/components/ui/price";
@@ -27,6 +16,7 @@ import { useUiStore } from "@/lib/ui-store";
 export type HeaderShellProps = {
   settings: SiteSettings;
   collections: CollectionSummary[];
+  children?: React.ReactNode;
 };
 
 const NAV_LINKS = [
@@ -35,18 +25,19 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const MOBILE_SECONDARY_LINKS = [
-  { href: "/contact", label: "Contact" },
-  { href: "/about", label: "About" },
-];
-
-export function HeaderShell({ settings, collections }: HeaderShellProps) {
+export function HeaderShell({
+  settings,
+  collections,
+  children,
+}: HeaderShellProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
 
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [collectionsOpen, setCollectionsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDialogRef = useRef<HTMLDialogElement>(null);
 
   const itemCount = useCartStore(selectItemCount);
   const openCart = useUiStore((state) => state.openCart);
@@ -63,7 +54,6 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      setMenuOpen(false);
       setCollectionsOpen(false);
     };
 
@@ -72,11 +62,56 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    const dialog = menuDialogRef.current;
+    if (!dialog) return;
+
+    if (menuOpen && !dialog.open) {
+      dialog.showModal();
+      document.documentElement.classList.add("menu-scroll-locked");
+    } else if (!menuOpen && dialog.open) {
+      dialog.close();
+    }
   }, [menuOpen]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => {
+      if (media.matches) setMenuOpen(false);
+    };
+
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => setMenuOpen(false);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(
+    () => () => document.documentElement.classList.remove("menu-scroll-locked"),
+    [],
+  );
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+    document.documentElement.classList.remove("menu-scroll-locked");
+    menuButtonRef.current?.focus();
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLDialogElement>) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    if (
+      target === event.currentTarget ||
+      target.closest("[data-menu-close]") ||
+      target.closest("a[href]")
+    ) {
+      setMenuOpen(false);
+    }
+  };
 
   const freeShippingMessage =
     settings.free_shipping_threshold && settings.free_shipping_threshold > 0
@@ -86,6 +121,7 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
   return (
     <>
       <header
+        id="site-header"
         className={cn(
           "fixed inset-x-0 top-0 z-40 transition-colors duration-500",
           transparent
@@ -110,9 +146,12 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
           <Container size="lg">
             <div className="flex h-16 items-center justify-between gap-6 md:h-20">
               <button
+                ref={menuButtonRef}
                 type="button"
                 onClick={() => setMenuOpen(true)}
                 aria-label="Open menu"
+                aria-controls="site-menu"
+                aria-expanded={menuOpen}
                 className="-ml-2 p-2 transition-opacity hover:opacity-70 md:hidden"
               >
                 <Menu className="size-5" aria-hidden />
@@ -169,28 +208,27 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
                       />
                     </button>
 
-                    <AnimatePresence>
-                      {collectionsOpen ? (
-                        <motion.div
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 6 }}
-                          transition={{ duration: 0.2, ease: "easeOut" }}
-                          className="absolute top-full left-0 w-56 border border-line bg-cream py-3 text-ink"
+                    <div
+                      aria-hidden={!collectionsOpen}
+                      inert={!collectionsOpen}
+                      className={cn(
+                        "header-collections-menu absolute top-full left-0 w-56 border border-line bg-cream py-3 text-ink",
+                        collectionsOpen
+                          ? "visible translate-y-0 opacity-100"
+                          : "invisible -translate-y-1.5 opacity-0",
+                      )}
+                    >
+                      {collections.map((collection) => (
+                        <Link
+                          key={collection.id}
+                          href={`/collections/${collection.slug}`}
+                          onClick={() => setCollectionsOpen(false)}
+                          className="block px-5 py-2.5 text-[11px] uppercase tracking-label transition-colors hover:bg-cream-deep"
                         >
-                          {collections.map((collection) => (
-                            <Link
-                              key={collection.id}
-                              href={`/collections/${collection.slug}`}
-                              onClick={() => setCollectionsOpen(false)}
-                              className="block px-5 py-2.5 text-[11px] uppercase tracking-label transition-colors hover:bg-cream-deep"
-                            >
-                              {collection.name}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
+                          {collection.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
@@ -208,7 +246,9 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
               <div className="flex items-center gap-5">
                 <button
                   type="button"
-                  onClick={() => window.dispatchEvent(new Event("maison-noir:open-search"))}
+                  onClick={() =>
+                    window.dispatchEvent(new Event("maison-noir:open-search"))
+                  }
                   aria-label="Search the collection"
                   className="transition-opacity hover:opacity-70"
                 >
@@ -238,172 +278,16 @@ export function HeaderShell({ settings, collections }: HeaderShellProps) {
         </div>
       </header>
 
-      <AnimatePresence>
-        {menuOpen ? (
-          <motion.div
-            key="mobile-menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Site menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 bg-cream md:hidden"
-          >
-            <motion.div
-              initial={{ y: "-100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "-100%" }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="flex h-full flex-col overflow-y-auto"
-            >
-              <div className="flex h-16 shrink-0 items-center justify-between border-b border-line">
-                <Container size="lg" className="flex items-center justify-between">
-                  <span className="font-display text-sm uppercase tracking-editorial">
-                    {settings.logo_url ? (
-                      <Image
-                        src={settings.logo_url}
-                        alt={settings.store_name}
-                        loading="eager"
-                        width={160}
-                        height={40}
-                        className="h-7 w-auto object-contain"
-                      />
-                    ) : (
-                      settings.store_name
-                    )}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setMenuOpen(false)}
-                    aria-label="Close menu"
-                    className="-mr-2 p-2 transition-opacity hover:opacity-60"
-                  >
-                    <X className="size-4" aria-hidden />
-                  </button>
-                </Container>
-              </div>
-
-              <Container size="lg" className="flex flex-1 flex-col py-9">
-                <Link
-                  href="/shop"
-                  onClick={() => setMenuOpen(false)}
-                  className="group border-b border-line pb-7"
-                >
-                  <span className="font-display text-xl text-ink transition-colors group-hover:text-gold-muted">
-                    Shop all
-                  </span>
-                </Link>
-
-                {collections.length > 0 ? (
-                  <div className="border-b border-line py-7">
-                    <p className="text-[10px] uppercase tracking-label text-gold">
-                      Collections
-                    </p>
-                    <ul className="mt-5 space-y-3">
-                      {collections.map((collection) => (
-                        <li key={collection.id}>
-                          <Link
-                            href={`/collections/${collection.slug}`}
-                            onClick={() => setMenuOpen(false)}
-                            className="block text-[12px] uppercase tracking-label text-ink transition-colors hover:text-gold-muted"
-                          >
-                            {collection.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-
-                <nav className="mt-7 flex flex-col gap-6" aria-label="More pages">
-                  {MOBILE_SECONDARY_LINKS.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
-                      className="group"
-                    >
-                      <span className="font-display text-lg text-ink transition-colors group-hover:text-gold-muted">
-                        {link.label}
-                      </span>
-                    </Link>
-                  ))}
-                </nav>
-
-                <div className="mt-auto space-y-3 border-t border-line pt-8">
-                  {settings.phone ? (
-                    <a
-                      href={`tel:${settings.phone}`}
-                      className="flex items-center gap-2 text-[10px] uppercase tracking-label text-muted"
-                    >
-                      <Phone className="size-3" aria-hidden />
-                      {settings.phone}
-                    </a>
-                  ) : null}
-
-                  {settings.email ? (
-                    <a
-                      href={`mailto:${settings.email}`}
-                      className="flex items-center gap-2 text-[10px] uppercase tracking-label text-muted"
-                    >
-                      <Mail className="size-3" aria-hidden />
-                      {settings.email}
-                    </a>
-                  ) : null}
-
-                  <SocialLinks settings={settings} className="pt-1" />
-                </div>
-              </Container>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <dialog
+        ref={menuDialogRef}
+        id="site-menu"
+        aria-label="Site menu"
+        onClick={handleMenuClick}
+        onClose={handleMenuClose}
+        className="mobile-menu-dialog m-0 h-full max-h-none w-full max-w-none border-0 bg-cream p-0 text-ink md:hidden"
+      >
+        {children}
+      </dialog>
     </>
-  );
-}
-
-function SocialLinks({
-  settings,
-  className,
-}: {
-  settings: SiteSettings;
-  className?: string;
-}) {
-  const links = [
-    { href: settings.instagram, label: "Instagram", Icon: Instagram },
-    { href: settings.facebook, label: "Facebook", Icon: Facebook },
-  ].filter((link) => Boolean(link.href));
-
-  if (links.length === 0) return null;
-
-  return (
-    <div className={cn("flex items-center gap-5", className)}>
-      {links.map(({ href, label, Icon }) =>
-        Icon ? (
-          <a
-            key={label}
-            href={href!}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={label}
-            className="transition-opacity hover:opacity-70"
-          >
-            <Icon className="size-4" aria-hidden />
-          </a>
-        ) : (
-          <a
-            key={label}
-            href={href!}
-            target="_blank"
-            rel="noreferrer"
-            className="text-[11px] uppercase tracking-label transition-opacity hover:opacity-70"
-          >
-            {label}
-          </a>
-        ),
-      )}
-    </div>
   );
 }

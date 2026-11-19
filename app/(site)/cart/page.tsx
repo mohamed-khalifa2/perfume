@@ -13,7 +13,7 @@ export default async function CartPage() {
   return (
     <Container size="lg">
       <div className="py-12 sm:py-16">
-        <p className="text-xs uppercase tracking-label text-gold">Bag</p>
+        <p className="text-xs uppercase tracking-label text-gold-on-light">Bag</p>
         <h1 className="mt-4 font-display text-3xl text-ink sm:text-4xl lg:text-5xl">
           Your bag
         </h1>

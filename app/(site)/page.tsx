@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/container";
 import { FadeIn } from "@/components/ui/fade-in";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
+import { formatNumber } from "@/components/ui/price";
 import { cn } from "@/lib/cn";
 import { getSeedVariants } from "@/lib/product-variants";
 import {
@@ -104,9 +105,9 @@ export default async function HomePage() {
       : displayFeatured.slice(0, 6);
 
   return (
-    <div className="-mt-16 md:-mt-[calc(var(--spacing-header)+2.25rem)]">
+    <div className="-mt-[var(--spacing-header)] md:-mt-[calc(var(--spacing-header)+1rem)]">
       {/* Hero */}
-      <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+      <section className="relative flex h-[100svh] items-end overflow-hidden">
         <Container size="lg" className="relative z-10 pb-28 md:pb-24">
           <div className="max-w-3xl">
             <p className="text-[11px] uppercase tracking-label text-gold">
@@ -285,7 +286,7 @@ export default async function HomePage() {
                   "mt-10 border-cream/40 text-cream hover:bg-cream hover:text-ink",
                 )}
               >
-                Read more
+                Read our story
               </Link>
             </FadeIn>
           </Container>
@@ -374,7 +375,7 @@ export default async function HomePage() {
             ].map((note, index) => (
               <FadeIn key={note.label} delay={index * 0.1}>
                 <div className="text-center">
-                  <p className="text-[11px] uppercase tracking-label text-gold">
+                  <p className="text-[11px] uppercase tracking-label text-gold-on-light">
                     {note.label}
                   </p>
                   <p className="mt-4 font-display text-2xl text-ink">
@@ -400,14 +401,17 @@ export default async function HomePage() {
               return (
                 <FadeIn key={item.title} delay={index * 0.08}>
                   <div className="flex items-start gap-4">
-                    <Icon className="mt-0.5 size-5 text-gold" aria-hidden />
+                    <Icon
+                      className="mt-0.5 size-5 text-gold-on-light"
+                      aria-hidden
+                    />
                     <div>
                       <p className="text-[11px] uppercase tracking-label text-ink">
                         {item.title}
                       </p>
                       <p className="mt-2 text-xs text-muted">
                         {item.title === "Free shipping" && threshold > 0
-                          ? `Complimentary shipping over ${threshold.toLocaleString("en-US")} EGP`
+                          ? `Complimentary shipping over ${formatNumber(threshold)} EGP`
                           : item.description}
                       </p>
                     </div>

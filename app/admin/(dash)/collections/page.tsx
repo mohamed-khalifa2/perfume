@@ -15,7 +15,7 @@ export default async function AdminCollectionsPage() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-label text-gold">
+          <p className="text-xs uppercase tracking-label text-gold-on-light">
             Catalog
           </p>
           <h1 className="mt-4 font-display text-4xl text-ink">Collections</h1>

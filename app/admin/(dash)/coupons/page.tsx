@@ -54,7 +54,7 @@ export default async function AdminCouponsPage() {
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Sales</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Sales</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Coupons</h1>
 
       <div className="mt-10">

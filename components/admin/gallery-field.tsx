@@ -240,7 +240,7 @@ export function GalleryField({
       ) : null}
 
       {error ? (
-        <p className="text-xs text-gold-muted" role="alert">
+        <p className="text-xs text-gold-on-light" role="alert">
           {error}
         </p>
       ) : null}

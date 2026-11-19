@@ -17,7 +17,7 @@ export function AdminNotice({
         role="alert"
         className="mt-6 flex items-start gap-3 border border-gold-muted/60 bg-gold/10 px-4 py-3 text-sm text-ink"
       >
-        <TriangleAlert className="mt-0.5 size-4 shrink-0 text-gold-muted" aria-hidden />
+        <TriangleAlert className="mt-0.5 size-4 shrink-0 text-gold-on-light" aria-hidden />
         <p>{error}</p>
       </div>
     );
@@ -29,7 +29,7 @@ export function AdminNotice({
         role="status"
         className="mt-6 flex items-start gap-3 border border-line bg-cream-deep/60 px-4 py-3 text-sm text-ink"
       >
-        <Check className="mt-0.5 size-4 shrink-0 text-gold-muted" aria-hidden />
+        <Check className="mt-0.5 size-4 shrink-0 text-gold-on-light" aria-hidden />
         <p>{savedMessage}</p>
       </div>
     );

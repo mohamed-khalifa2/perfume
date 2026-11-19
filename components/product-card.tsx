@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import { ProductCardMedia } from "@/components/product-card-media";
 import { ProductCardQuickAdd } from "@/components/product-card-quick-add";
 import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/ui/price";
@@ -74,35 +74,14 @@ export function ProductCard({
         />
       </div>
 
-      <div className="relative order-1 aspect-3/4 overflow-hidden bg-cream-deep">
-        <Link
-          href={`/shop/${slug}`}
-          className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
-          aria-label={name}
-        >
-          <Image
-            src={coverImage}
-            alt={name}
-            fill
-            loading={eager ? "eager" : undefined}
-            sizes={sizes}
-            className={cn(
-              "object-cover transition-opacity duration-700 ease-out",
-              galleryImage ? "group-hover:opacity-0" : "group-hover:scale-[1.03]",
-            )}
-          />
-
-          {galleryImage ? (
-            <Image
-              src={galleryImage}
-              alt=""
-              fill
-              sizes={sizes}
-              className="object-cover opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-100"
-            />
-          ) : null}
-        </Link>
-
+      <ProductCardMedia
+        slug={slug}
+        name={name}
+        coverImage={coverImage}
+        galleryImage={galleryImage}
+        eager={eager}
+        sizes={sizes}
+      >
         {isNew ? (
           <Badge variant="gold" size="sm" className="absolute top-3 left-3 z-10">
             New
@@ -121,7 +100,7 @@ export function ProductCard({
             disabled={soldOut}
           />
         </div>
-      </div>
+      </ProductCardMedia>
     </article>
   );
 }

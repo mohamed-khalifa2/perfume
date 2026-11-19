@@ -1,8 +1,16 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import type { Metadata } from "next";
+
 import { ContactForm } from "@/components/contact-form";
 import { getSiteSettings } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Contact the Maison Noir team about fragrances, orders or collaborations.",
+};
 
 function whatsappHref(value: string): string {
   if (/^https?:\/\//i.test(value)) return value;
@@ -23,7 +31,7 @@ export default async function ContactPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-      <p className="text-xs uppercase tracking-label text-gold">Contact</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Contact</p>
       <h1 className="mt-4 font-display text-4xl text-ink lg:text-5xl">
         Contact us
       </h1>
@@ -32,7 +40,7 @@ export default async function ContactPage() {
         <ContactForm />
 
         <div className="border-t border-line pt-8 text-sm text-muted lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
-          <p className="text-xs uppercase tracking-label text-gold">
+          <p className="text-xs uppercase tracking-label text-gold-on-light">
             Visit or write to us
           </p>
           <p className="mt-5 max-w-md leading-relaxed">
@@ -47,7 +55,7 @@ export default async function ContactPage() {
                   href={`mailto:${settings.email}`}
                   className="flex items-center gap-3 transition-colors hover:text-ink"
                 >
-                  <Mail className="size-4 shrink-0 text-gold" aria-hidden />
+                  <Mail className="size-4 shrink-0 text-gold-on-light" aria-hidden />
                   {settings.email}
                 </a>
               </li>
@@ -59,7 +67,7 @@ export default async function ContactPage() {
                   href={`tel:${settings.phone}`}
                   className="flex items-center gap-3 transition-colors hover:text-ink"
                 >
-                  <Phone className="size-4 shrink-0 text-gold" aria-hidden />
+                  <Phone className="size-4 shrink-0 text-gold-on-light" aria-hidden />
                   {settings.phone}
                 </a>
               </li>
@@ -73,7 +81,7 @@ export default async function ContactPage() {
                   rel="noreferrer"
                   className="flex items-center gap-3 transition-colors hover:text-ink"
                 >
-                  <Phone className="size-4 shrink-0 text-gold" aria-hidden />
+                  <Phone className="size-4 shrink-0 text-gold-on-light" aria-hidden />
                   Chat on WhatsApp
                 </a>
               </li>
@@ -81,7 +89,7 @@ export default async function ContactPage() {
 
             {settings.address ? (
               <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden />
+                <MapPin className="mt-0.5 size-4 shrink-0 text-gold-on-light" aria-hidden />
                 {settings.address}
               </li>
             ) : null}

@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink px-6">
       <div className="w-full max-w-md border border-paper/15 p-10">
-        <p className="text-xs uppercase tracking-label text-gold">Admin</p>
+        <p className="text-xs uppercase tracking-label text-gold-on-light">Admin</p>
         <h1 className="mt-4 font-display text-3xl text-paper">Sign in</h1>
         <p className="mt-3 text-sm text-paper/60">
           Access the Maison Noir control panel

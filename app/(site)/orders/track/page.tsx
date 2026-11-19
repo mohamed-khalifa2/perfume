@@ -10,7 +10,7 @@ export default function TrackOrderPage() {
   return (
     <Container size="sm">
       <div className="py-12 sm:py-16">
-        <p className="text-xs uppercase tracking-label text-gold">Orders</p>
+        <p className="text-xs uppercase tracking-label text-gold-on-light">Orders</p>
         <h1 className="mt-4 font-display text-3xl text-ink sm:text-4xl lg:text-5xl">
           Track your order
         </h1>

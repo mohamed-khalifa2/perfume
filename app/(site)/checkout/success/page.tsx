@@ -19,7 +19,7 @@ export default async function CheckoutSuccessPage({
   return (
     <Container size="sm">
       <div className="py-20 text-center sm:py-24">
-        <p className="text-xs uppercase tracking-label text-gold">
+        <p className="text-xs uppercase tracking-label text-gold-on-light">
           Order confirmed
         </p>
         <h1 className="mt-6 font-display text-3xl text-ink sm:text-4xl lg:text-5xl">

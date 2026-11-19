@@ -70,7 +70,7 @@ export function OrderTrackingForm() {
       {state.status === "error" ? (
         <p
           role="alert"
-          className="mt-6 flex items-start gap-2 text-sm text-gold-muted"
+          className="mt-6 flex items-start gap-2 text-sm text-gold-on-light"
         >
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           {state.message}

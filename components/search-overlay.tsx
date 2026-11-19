@@ -20,7 +20,8 @@ export type SearchResult = {
 };
 
 export function SearchOverlay() {
-  const [open, setOpen] = useState(false);
+  // Mounted only after an open request, so the first render is already open.
+  const [open, setOpen] = useState(true);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);

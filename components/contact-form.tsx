@@ -101,7 +101,7 @@ export function ContactForm() {
         <p
           role={state.status === "error" ? "alert" : "status"}
           className={`flex items-start gap-2 text-sm ${
-            state.status === "error" ? "text-gold-muted" : "text-ink"
+            state.status === "error" ? "text-gold-on-light" : "text-ink"
           }`}
         >
           {state.status === "error" ? (

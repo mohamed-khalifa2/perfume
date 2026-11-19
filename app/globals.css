@@ -36,6 +36,7 @@
   --color-cream-deep: var(--color-cream-200);
   --color-gold: var(--color-gold-500);
   --color-gold-muted: var(--color-gold-600);
+  --color-gold-on-light: #7a623c;
   --color-line: var(--color-cream-300);
   --color-line-strong: var(--color-cream-400);
   --color-muted: #6b655c;
@@ -70,8 +71,147 @@
 }
 
 @layer utilities {
+  .header-collections-menu {
+    transition:
+      opacity 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  /* Modal drawer: display/overlay stay discrete until the fade and slide end. */
+  .mobile-menu-dialog {
+    opacity: 0;
+    transition:
+      opacity 250ms ease,
+      display 450ms allow-discrete,
+      overlay 450ms allow-discrete;
+  }
+
+  .mobile-menu-dialog[open] {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .mobile-menu-dialog[open] {
+      opacity: 0;
+    }
+  }
+
+  .mobile-menu-panel {
+    transform: translateY(-100%);
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .mobile-menu-dialog[open] .mobile-menu-panel {
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    .mobile-menu-dialog[open] .mobile-menu-panel {
+      transform: translateY(-100%);
+    }
+  }
+
+  html.menu-scroll-locked {
+    overflow: hidden;
+  }
+
+  .product-card-media[data-hover-ready="true"]:hover .product-card-cover,
+  .product-card-media[data-hover-ready="true"]:focus-within .product-card-cover {
+    opacity: 0;
+  }
+
+  .product-card-media[data-hover-ready="true"] .product-card-hover {
+    opacity: 0;
+  }
+
+  .product-card-media[data-hover-ready="true"]:hover .product-card-hover,
+  .product-card-media[data-hover-ready="true"]:focus-within .product-card-hover {
+    opacity: 1;
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .fade-in[data-visible="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-in--distance-14 {
+    transform: translateY(0.875rem);
+  }
+
+  .fade-in--distance-18 {
+    transform: translateY(1.125rem);
+  }
+
+  .fade-in--distance-24 {
+    transform: translateY(1.5rem);
+  }
+
+  .fade-in--delay-80 {
+    transition-delay: 80ms;
+  }
+
+  .fade-in--delay-100 {
+    transition-delay: 100ms;
+  }
+
+  .fade-in--delay-120 {
+    transition-delay: 120ms;
+  }
+
+  .fade-in--delay-200 {
+    transition-delay: 200ms;
+  }
+
+  .fade-in--delay-240 {
+    transition-delay: 240ms;
+  }
+
+  .fade-in--delay-360 {
+    transition-delay: 360ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in {
+      opacity: 1;
+      transform: none;
+      transition-duration: 300ms;
+      transition-delay: 0ms;
+      will-change: auto;
+    }
+
+    .fade-in[data-visible="true"] {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   .animate-scroll-line {
     animation: scroll-line 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .toast-item {
+    animation: toast-in 220ms ease-out both;
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .scrollbar-none {

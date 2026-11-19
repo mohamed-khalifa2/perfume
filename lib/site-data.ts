@@ -1,7 +1,10 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { PUBLIC_CATALOG_TAG } from "@/lib/catalog-cache";
+import { localImage } from "@/lib/local-images";
 import {
   displayCollectionImage,
   displayHeroImage,
@@ -13,7 +16,7 @@ import {
   type ProductVariantOption,
 } from "@/lib/product-variants";
 import { getSeedProduct, SEED_PRODUCTS } from "@/lib/seed-catalog";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { CollectionSummary, SiteSettings } from "@/lib/types";
 
 export type ProductDetail = {
@@ -49,24 +52,36 @@ const FALLBACK_SETTINGS: SiteSettings = {
   seo_description: null,
 };
 
-export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("site_settings")
-      .select("*")
-      .maybeSingle();
+function cachedPublicData<T>(key: string, load: () => Promise<T>) {
+  return unstable_cache(load, [key], {
+    tags: [PUBLIC_CATALOG_TAG],
+    revalidate: 60,
+  });
+}
 
-    return data ?? FALLBACK_SETTINGS;
-  } catch {
-    return FALLBACK_SETTINGS;
-  }
-});
+export const getSiteSettings = cache(
+  cachedPublicData("site-settings", async (): Promise<SiteSettings> => {
+    try {
+      const supabase = createPublicClient();
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .maybeSingle();
+
+      return {
+        ...(data ?? FALLBACK_SETTINGS),
+        logo_url: localImage(data?.logo_url ?? null),
+      };
+    } catch {
+      return FALLBACK_SETTINGS;
+    }
+  }),
+);
 
 export const getVisibleCollections = cache(
-  async (): Promise<CollectionSummary[]> => {
+  cachedPublicData("visible-collections", async (): Promise<CollectionSummary[]> => {
     try {
-      const supabase = await createClient();
+      const supabase = createPublicClient();
       const { data } = await supabase
         .from("collections")
         .select("id, name, slug, description, image_url, sort_order, is_visible")
@@ -80,23 +95,26 @@ export const getVisibleCollections = cache(
     } catch {
       return [];
     }
-  },
+  }),
 );
 
-export const getHero = cache(async () => {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("hero").select("*").maybeSingle();
-    if (!data) return null;
-    return { ...data, image_url: displayHeroImage(data.image_url) };
-  } catch {
-    return null;
-  }
-});
+export const getHero = cache(
+  cachedPublicData("hero", async () => {
+    try {
+      const supabase = createPublicClient();
+      const { data } = await supabase.from("hero").select("*").maybeSingle();
+      if (!data) return null;
+      return { ...data, image_url: displayHeroImage(data.image_url) };
+    } catch {
+      return null;
+    }
+  }),
+);
 
-export const getFeaturedProducts = cache(async () => {
-  try {
-    const supabase = await createClient();
+export const getFeaturedProducts = cache(
+  cachedPublicData("featured-products", async () => {
+    try {
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("products")
       .select(
@@ -154,11 +172,13 @@ export const getFeaturedProducts = cache(async () => {
   } catch {
     return [];
   }
-});
+  }),
+);
 
-export const getNewArrivals = cache(async () => {
-  try {
-    const supabase = await createClient();
+export const getNewArrivals = cache(
+  cachedPublicData("new-arrivals", async () => {
+    try {
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("products")
       .select(
@@ -216,11 +236,12 @@ export const getNewArrivals = cache(async () => {
   } catch {
     return [];
   }
-});
+  }),
+);
 
 export const getVisibleProductSlugs = cache(async (): Promise<string[]> => {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("products")
       .select("slug")
@@ -245,7 +266,7 @@ export const getProductDetail = cache(
     const seed = getSeedProduct(slug);
 
     try {
-      const supabase = await createClient();
+      const supabase = createPublicClient();
       const { data: product } = await supabase
         .from("products")
         .select(
@@ -375,7 +396,7 @@ function seedShopProducts(): ShopProduct[] {
 /** All visible products with live variant stock, for grids and quick-add. */
 export const getShopProducts = cache(async (): Promise<ShopProduct[]> => {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("products")
       .select(

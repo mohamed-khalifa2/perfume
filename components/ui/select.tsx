@@ -72,7 +72,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       </div>
 
       {error ? (
-        <p id={messageId} className="text-xs text-gold-muted">
+        <p id={messageId} className="text-xs text-gold-on-light">
           {error}
         </p>
       ) : null}

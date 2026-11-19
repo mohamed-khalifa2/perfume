@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-label text-gold">Admin</p>
+      <p className="text-xs uppercase tracking-label text-gold-on-light">Admin</p>
       <h1 className="mt-4 font-display text-4xl text-ink">Dashboard</h1>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

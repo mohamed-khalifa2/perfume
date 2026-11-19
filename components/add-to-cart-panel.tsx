@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import {
   firstInStockVariant,
   type ProductVariantOption,
 } from "@/lib/product-variants";
+import { showToast } from "@/lib/toast";
 import { useUiStore } from "@/lib/ui-store";
 
 export type AddToCartPanelProps = {
@@ -75,7 +75,8 @@ export function AddToCartPanel({
       image,
       quantity: qty,
     });
-    toast.success("Added to bag", {
+    showToast({
+      title: "Added to bag",
       description: `${productName}, ${variant.sizeMl} ml`,
     });
     openCart();
@@ -154,15 +155,15 @@ export function AddToCartPanel({
         </div>
 
         {everyVariantSoldOut ? (
-          <p className="mt-3 text-xs text-gold-muted">
+          <p className="mt-3 text-xs text-gold-on-light">
             Out of stock. All sizes are currently unavailable.
           </p>
         ) : variant.stock <= 0 ? (
-          <p className="mt-3 text-xs text-gold-muted">
+          <p className="mt-3 text-xs text-gold-on-light">
             This size is out of stock. Please choose another size.
           </p>
         ) : lowStock ? (
-          <p className="mt-3 text-xs text-gold-muted">
+          <p className="mt-3 text-xs text-gold-on-light">
             Only {variant.stock} left in {variant.sizeMl} ml
           </p>
         ) : (
